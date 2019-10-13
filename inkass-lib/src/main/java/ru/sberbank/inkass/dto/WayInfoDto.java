@@ -2,14 +2,16 @@ package ru.sberbank.inkass.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import static java.lang.Math.pow;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class WayInfoDto {
 
-    private final double timeInWay;
+    private double timeInWay;
 
     private double pheromone;
 

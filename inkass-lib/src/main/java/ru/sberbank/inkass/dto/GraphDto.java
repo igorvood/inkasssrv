@@ -1,5 +1,6 @@
 package ru.sberbank.inkass.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -12,6 +13,8 @@ import static java.util.stream.Collectors.toMap;
 
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+
 public class GraphDto {
 
     private List<EdgeDto> edgeDtos;

@@ -1,19 +1,23 @@
 package ru.sberbank.inkass.dto;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PointDto implements Comparable<PointDto> {
-    private final String name;
+    private String name;
     //    время инкассации
-    private final double timeInPoint;
+    private double timeInPoint;
     // признак того что точка является банком куда нужно все отвезти
-    private final boolean isBase;
+    private boolean isBase;
     //    сумма инкассации
     private double sum;
 
@@ -37,7 +41,7 @@ public class PointDto implements Comparable<PointDto> {
     }
 
     public PointDto copy() {
-        return new PointDto(name, timeInPoint, sum, isBase);
+        return new PointDto(name, timeInPoint, isBase, sum);
     }
 
     @Override
