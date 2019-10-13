@@ -1,6 +1,8 @@
 package ru.sberbank.service;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.infrastructure.StartPropertyDto;
 import ru.sberbank.inkass.dto.GraphDto;
@@ -23,7 +25,8 @@ public class GraphControllerImpl implements GraphController {
     }
 
     @Override
-    @GetMapping(value = "graph/getNewGraph")
+//    @GetMapping(value = "graph/getNewGraph"/*, produces = MediaType.APPLICATION_JSON*/)
+    @RequestMapping(value = "/graph/getNewGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
     public GraphDto getNewGraph() {
         return fillGraphService.fill(property.getGraphSize());
     }
