@@ -1,4 +1,4 @@
-package ru.sberbank.infrastructure;
+package ru.sberbank.inkass.property;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

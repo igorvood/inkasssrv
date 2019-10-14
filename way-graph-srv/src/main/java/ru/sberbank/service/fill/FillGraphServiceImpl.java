@@ -2,11 +2,11 @@ package ru.sberbank.service.fill;
 
 
 import org.springframework.stereotype.Service;
-import ru.sberbank.infrastructure.StartPropertyDto;
 import ru.sberbank.inkass.dto.EdgeDto;
 import ru.sberbank.inkass.dto.GraphDto;
 import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.dto.WayInfoDto;
+import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import static java.util.stream.Collectors.toMap;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 public class GraphDto {
 
     private List<EdgeDto> edgeDtos;
@@ -25,6 +25,7 @@ public class GraphDto {
         this.edgeDtos = new ArrayList<>();
     }
 
+    @Transient
     public TreeMap<Pair<PointDto, PointDto>, WayInfoDto> getInfoDtoTreeMap() {
         if (infoDtoTreeMap == null) {
             final Map<Pair<PointDto, PointDto>, WayInfoDto> collect = edgeDtos.stream()

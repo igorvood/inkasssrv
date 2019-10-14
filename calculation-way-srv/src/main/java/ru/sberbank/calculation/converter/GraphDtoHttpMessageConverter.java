@@ -6,14 +6,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.stereotype.Component;
 import ru.sberbank.inkass.dto.GraphDto;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-@Component
+//@Component
 public class GraphDtoHttpMessageConverter implements HttpMessageConverter<GraphDto> {
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
