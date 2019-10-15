@@ -1,4 +1,4 @@
-package ru.sberbank.calculation.run;
+package ru.sberbank.calculation.run.rest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

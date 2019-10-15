@@ -4,6 +4,8 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
+import ru.sberbank.calculation.run.rest.BestWaySaverService;
+import ru.sberbank.calculation.run.rest.GraphService;
 import ru.sberbank.inkass.dto.AntWayDto;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
 import ru.sberbank.inkass.dto.GraphDto;
@@ -31,12 +33,15 @@ public class CalculationServiceImpl implements CalculationService {
 
     private final CalcChanceService calcChanceService;
 
+    private final BestWaySaverService bestWaySaverService;
+
     private final StartPropertyDto prop;
 
 
-    public CalculationServiceImpl(GraphService graphService, CalcChanceService calcChanceService, StartPropertyDto prop) {
+    public CalculationServiceImpl(GraphService graphService, CalcChanceService calcChanceService, BestWaySaverService bestWaySaverService, StartPropertyDto prop) {
         this.graphService = graphService;
         this.calcChanceService = calcChanceService;
+        this.bestWaySaverService = bestWaySaverService;
         this.prop = prop;
     }
 
@@ -66,10 +71,11 @@ public class CalculationServiceImpl implements CalculationService {
                     final BestWayCandidateDto bestWayCandidateDto = bestWays.stream()
                             .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                             .get();
+                    bestWaySaverService.saveBestWay(bestWayCandidateDto);
 
-                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
-                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
-                            .get();
+//                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
+//                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
+//                            .get();
 
                     LOGGER.debug(collect.size());
                 });
