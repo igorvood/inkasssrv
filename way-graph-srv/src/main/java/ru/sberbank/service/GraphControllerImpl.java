@@ -47,7 +47,7 @@ public class GraphControllerImpl implements GraphController {
         logger.info("get new graph");
         GraphDto fill = fillGraphService.fill(property.getGraphSize());
 
-        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        final Gson gson = new GsonBuilder()./*setPrettyPrinting().*/create();
 
 //        final String s = gson.toJson(fill);
 //        FileService.write("outGraph.gson", s);
