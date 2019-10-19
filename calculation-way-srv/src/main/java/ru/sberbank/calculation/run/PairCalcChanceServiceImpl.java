@@ -9,6 +9,7 @@ import ru.sberbank.inkass.dto.WayInfoDto;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -69,9 +70,15 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         final Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap = antWayDto.getRoadMap();
         final PointDto currentPoint = antWayDto.getCurrentPoint();
 
+
         Map<Pair<PointDto, PointDto>, Double> possibleWays = getProbablyPoint(antWayDto)
                 .map(nextPoint -> Pair.of(currentPoint, nextPoint))
-                .map(pointDtoPointDtoPair -> Pair.of(pointDtoPointDtoPair, roadMap.get(pointDtoPointDtoPair).getComplexWeight()))
+                .map(new Function<Pair<PointDto, PointDto>, Pair<Pair<PointDto, PointDto>, Double>>() {
+                    @Override
+                    public Pair<Pair<PointDto, PointDto>, Double> apply(Pair<PointDto, PointDto> pointDtoPointDtoPair) {
+                        return Pair.of(pointDtoPointDtoPair, roadMap.get(pointDtoPointDtoPair).getComplexWeight() * pointDtoPointDtoPair.getRight().getSum());
+                    }
+                })
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
         if (possibleWays.isEmpty()) {
             final Pair<PointDto, PointDto> of = Pair.of(antWayDto.getCurrentPoint(), antWayDto.getBankPoint());
@@ -109,7 +116,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         final double workingDayLength = prop.getWorkingDayLength();
 
         //        delete
-        final double sum = antWayDto.getWayPair().stream().map(q -> q.getRight().getTimeInPoint()).mapToDouble(value -> value).sum();
+//        final double sum = antWayDto.getWayPair().stream().map(q -> q.getRight().getTimeInPoint()).mapToDouble(value -> value).sum();
 
         //        delete
 
@@ -121,16 +128,20 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         final WayInfoDto wayInfoDto = antWayDto.getRoadMap().get(nextPoint);
         Assert.notNull(antWayDto, "registerPoint wayInfoDto is empty");
         final double moneyOnThisTrip1 = antWayDto.getMoneyOnThisTrip();
-        final double moneyOnThisTrip = right.equals(antWayDto.getBankPoint()) ? 0 : (moneyOnThisTrip1 + right.getSum());
+        double moneyOnThisTrip = 0;
+        if (!right.equals(antWayDto.getBankPoint()))
+            moneyOnThisTrip = moneyOnThisTrip1 + right.getSum();
+        else antWayDto.getShipping().add(moneyOnThisTrip1);
+
         antWayDto.setMoneyOnThisTrip(moneyOnThisTrip);
         antWayDto.setTotalMoney(antWayDto.getTotalMoney() + right.getSum());
         antWayDto.setTotalTime(antWayDto.getTotalTime() + wayInfoDto.getTimeInWay() + right.getTimeInPoint());
         antWayDto.getWayPair().add(nextPoint);
         Assert.isTrue(right.equals(antWayDto.getBankPoint()) || antWayDto.getNotVisitedPoint().remove(right), () -> String.format("Point all ready visited %s", right));
-        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
-            Assert.isTrue(antWayDto.getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getMoneyOnThisTrip());
-        if (antWayDto.getTotalTime() > workingDayLength)
-            Assert.isTrue((antWayDto.getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTotalTime());
+//        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
+        Assert.isTrue(antWayDto.getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getMoneyOnThisTrip());
+//        if (antWayDto.getTotalTime() > workingDayLength)
+        Assert.isTrue((antWayDto.getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTotalTime());
         antWayDto.setCurrentPoint(right);
         return true;
 

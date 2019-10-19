@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import ru.sberbank.calculation.run.rest.BestWaySaverService;
 import ru.sberbank.calculation.run.rest.GraphService;
 import ru.sberbank.inkass.dto.*;
@@ -66,27 +67,30 @@ public class CalculationServiceImpl implements CalculationService {
 //                                List<MutablePair<PointDto, PointDto>> l = new ArrayList<>();
 //                                antWayDto.getWayPair().forEach(q->l.add(MutablePair.of(q.getLeft(),q.getRight())));
                                 bestWays.add(new BestWayCandidateDto(antWayDto.getTotalTime(), antWayDto.getTotalMoney()));
-//                                LOGGER.info(String.format("add best way candidate %d", bestWays.size()));
+                                if (bestWays.size() % 1000 == 0)
+                                    LOGGER.info(String.format("add best way candidate %d", bestWays.size()));
                             })
-                            .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto ->
-                                    antWayDto.getWayPair().stream()
-                                            .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
+                            .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto -> antWayDto.getWayPair().stream()
+                                    .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
                             .collect(groupingBy(MutablePair::getLeft, mapping(MutablePair::getRight, summarizingDouble(value1 -> value1))));
                     final BestWayCandidateDto bestWayCandidateDto = bestWays.stream()
                             .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                             .get();
+                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
+                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
+                            .get();
+                    Assert.isTrue(bestWayCandidateDto.getTotalMoney() >= worstWayCandidateDto.getTotalMoney(), () -> "плохой алгоритм сравнения");
                     bestWaySaverService.saveBestWay(bestWayCandidateDto);
                     fill.getEdgeDtos().stream()
                             .parallel()
                             .forEach(new Consumer<EdgeDto>() {
                                 @Override
                                 public void accept(EdgeDto q) {
-                                    q.getWayInfo().setPheromone(collect.get(Pair.of(q.getFrom(), q.getTo())).getAverage());
+                                    final DoubleSummaryStatistics doubleSummaryStatistics = collect.get(Pair.of(q.getFrom(), q.getTo()));
+                                    if (doubleSummaryStatistics != null)
+                                        q.getWayInfo().setPheromone((q.getWayInfo().getPheromone() + doubleSummaryStatistics.getSum()));
                                 }
                             });
-//                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
-//                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
-//                            .get();
 
                     LOGGER.debug(collect.size());
                 });
