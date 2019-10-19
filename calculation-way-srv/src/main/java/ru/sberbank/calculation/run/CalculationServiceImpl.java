@@ -55,6 +55,7 @@ public class CalculationServiceImpl implements CalculationService {
         LOGGER.info("++++++++++++++++++++++++");
         final int workingDayCount = prop.getWorkingDayCount();
         final int antCount = prop.getAntCount();
+        final double speedTranspirationPheromone = prop.getSpeedTranspirationPheromone();
         IntStream.range(0, workingDayCount)
                 .peek(value -> LOGGER.debug("Day num " + value))
                 .forEach(value -> {
@@ -88,7 +89,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 public void accept(EdgeDto q) {
                                     final DoubleSummaryStatistics doubleSummaryStatistics = collect.get(Pair.of(q.getFrom(), q.getTo()));
                                     if (doubleSummaryStatistics != null)
-                                        q.getWayInfo().setPheromone((q.getWayInfo().getPheromone() + doubleSummaryStatistics.getSum()));
+                                        q.getWayInfo().setPheromone((q.getWayInfo().getPheromone() * speedTranspirationPheromone + doubleSummaryStatistics.getSum()));
                                 }
                             });
 
