@@ -27,6 +27,7 @@ public class GraphControllerImpl implements GraphController {
     @Override
     @RequestMapping(value = "/graph/getNewGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
     public GraphDto getNewGraph() {
+        logger.info("get new graph");
         return fillGraphService.fill(property.getGraphSize());
     }
 
