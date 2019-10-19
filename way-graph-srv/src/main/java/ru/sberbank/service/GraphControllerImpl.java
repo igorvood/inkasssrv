@@ -49,8 +49,11 @@ public class GraphControllerImpl implements GraphController {
 //        FileService.write("outGraph.gson", s);
 //        ------------------------------------
 
+        logger.info("Start read file");
         final String read = FileService.read("outGraph.gson");
+        logger.info("Start parse file");
         fill = gson.fromJson(read, GraphDto.class);
+        logger.info("End parse file");
 
         graphContainer.saveGraph(fill);
         bestWayContainer.reset();
