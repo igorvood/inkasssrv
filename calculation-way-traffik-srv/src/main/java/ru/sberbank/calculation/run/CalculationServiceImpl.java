@@ -1,15 +1,14 @@
 package ru.sberbank.calculation.run;
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import ru.sberbank.calculation.run.rest.BestWaySaverService;
 import ru.sberbank.calculation.run.rest.GraphService;
-import ru.sberbank.inkass.dto.AntWayDto;
-import ru.sberbank.inkass.dto.BestWayCandidateDto;
-import ru.sberbank.inkass.dto.GraphDto;
-import ru.sberbank.inkass.dto.PointDto;
+import ru.sberbank.inkass.dto.*;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.Comparator;
@@ -17,6 +16,7 @@ import java.util.Date;
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -55,6 +55,7 @@ public class CalculationServiceImpl implements CalculationService {
         LOGGER.info("++++++++++++++++++++++++");
         final int workingDayCount = prop.getWorkingDayCount();
         final int antCount = prop.getAntCount();
+        final double speedTranspirationPheromone = prop.getSpeedTranspirationPheromone();
         IntStream.range(0, workingDayCount)
                 .peek(value -> LOGGER.debug("Day num " + value))
                 .forEach(value -> {
@@ -67,20 +68,30 @@ public class CalculationServiceImpl implements CalculationService {
 //                                List<MutablePair<PointDto, PointDto>> l = new ArrayList<>();
 //                                antWayDto.getWayPair().forEach(q->l.add(MutablePair.of(q.getLeft(),q.getRight())));
                                 bestWays.add(new BestWayCandidateDto(antWayDto.getTotalTime(), antWayDto.getTotalMoney()));
-//                                LOGGER.info(String.format("add best way candidate %d", bestWays.size()));
+                                if (bestWays.size() % 1000 == 0)
+                                    LOGGER.info(String.format("add best way candidate %d", bestWays.size()));
                             })
-                            .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto ->
-                                    antWayDto.getWayPair().stream()
-                                            .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
+                            .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto -> antWayDto.getWayPair().stream()
+                                    .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
                             .collect(groupingBy(MutablePair::getLeft, mapping(MutablePair::getRight, summarizingDouble(value1 -> value1))));
                     final BestWayCandidateDto bestWayCandidateDto = bestWays.stream()
                             .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                             .get();
+                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
+                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
+                            .get();
+                    Assert.isTrue(bestWayCandidateDto.getTotalMoney() >= worstWayCandidateDto.getTotalMoney(), () -> "плохой алгоритм сравнения");
                     bestWaySaverService.saveBestWay(bestWayCandidateDto);
-
-//                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
-//                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
-//                            .get();
+                    fill.getEdgeDtos().stream()
+                            .parallel()
+                            .forEach(new Consumer<EdgeDto>() {
+                                @Override
+                                public void accept(EdgeDto q) {
+                                    final DoubleSummaryStatistics doubleSummaryStatistics = collect.get(Pair.of(q.getFrom(), q.getTo()));
+                                    if (doubleSummaryStatistics != null)
+                                        q.getWayInfo().setPheromone((q.getWayInfo().getPheromone() * speedTranspirationPheromone + doubleSummaryStatistics.getSum()));
+                                }
+                            });
 
                     LOGGER.debug(collect.size());
                 });
