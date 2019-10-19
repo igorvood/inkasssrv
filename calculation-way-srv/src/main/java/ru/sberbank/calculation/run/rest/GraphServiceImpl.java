@@ -34,7 +34,7 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public GraphDto getNewGraph() {
         final GraphDto graphDto = restTemplate.getForObject(server + newGraph, GraphDto.class);
-        logger.info(String.valueOf(graphDto.getEdgeDtos().size()));
+        logger.info(String.format("graph size - > %d", graphDto.getEdgeDtos().size()));
         return graphDto;
     }
 
