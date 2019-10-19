@@ -27,6 +27,9 @@ public class PropertiesWithJavaConfig {
     @Value("${GRAPH_SIZE}")
     private int graphSize;
 
+    @Value("${SPEED_TRANSPIRATION_PHEROMONE}")
+    private double speedTranspirationPheromone;
+
     @Bean
     public StartPropertyDto getStartPropertyDto() {
         return new StartPropertyDto(graphSize
