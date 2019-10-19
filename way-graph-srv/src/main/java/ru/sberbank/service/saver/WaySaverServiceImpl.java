@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
+import ru.sberbank.inkass.dto.PointForSaveDto;
 
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,8 +55,8 @@ public class WaySaverServiceImpl implements WaySaverService {
 
     @Override
     @GetMapping(value = "result/savePoint")
-    public int saveBestWay(String algorithm, String pointName) {
-        bestWayAccumulation.saveBestWay(algorithm, pointName);
+    public int saveBestWay(PointForSaveDto pointForSaveDto) {
+        bestWayAccumulation.saveBestWay(pointForSaveDto.getAlgorithm(), pointForSaveDto.getPointName());
         return 0;
     }
 

@@ -1,6 +1,7 @@
 package ru.sberbank.service.saver;
 
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
+import ru.sberbank.inkass.dto.PointForSaveDto;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,7 +14,7 @@ public interface WaySaverService {
 
     BestWayCandidateDto getWorstWay();
 
-    int saveBestWay(String algorithm, String pointName);
+    int saveBestWay(PointForSaveDto pointForSaveDto);
 
     ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getBestWayResult();
 
