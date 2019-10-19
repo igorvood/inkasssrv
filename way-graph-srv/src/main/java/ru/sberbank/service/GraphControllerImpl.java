@@ -1,10 +1,12 @@
 package ru.sberbank.service;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.inkass.dto.GraphDto;
+import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.property.StartPropertyDto;
 import ru.sberbank.service.fill.FillGraphService;
 import ru.sberbank.service.saver.GraphContainer;
@@ -39,7 +41,7 @@ public class GraphControllerImpl implements GraphController {
 
     @Override
     @RequestMapping(value = "/graph/getRefreshedGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
-    public GraphDto getRefreshedGraph() {
+    public GraphDto getRefreshedGraph(@RequestBody PointDto registrarPoint) {
         return graphContainer.getRefreshGraph();
     }
 

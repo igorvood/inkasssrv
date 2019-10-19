@@ -1,11 +1,12 @@
 package ru.sberbank.service;
 
 import ru.sberbank.inkass.dto.GraphDto;
+import ru.sberbank.inkass.dto.PointDto;
 
 public interface GraphController {
 
     GraphDto getNewGraph();
 
-    GraphDto getRefreshedGraph();
+    GraphDto getRefreshedGraph(PointDto registrarPoint);
 
 }
