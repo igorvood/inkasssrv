@@ -1,7 +1,9 @@
 package ru.sberbank.service.saver;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface WaySaverService {
 
@@ -9,6 +11,10 @@ public interface WaySaverService {
 
     BestWayCandidateDto getSuperWay();
 
-    @GetMapping(value = "result/getSuperWay")
     BestWayCandidateDto getWorstWay();
+
+    void saveBestWay(String algorithm, String pointName);
+
+    ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getBestWayResult();
+
 }

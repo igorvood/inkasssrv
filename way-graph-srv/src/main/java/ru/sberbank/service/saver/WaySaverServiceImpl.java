@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
 
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 
@@ -17,8 +19,11 @@ public class WaySaverServiceImpl implements WaySaverService {
 
     private final BestWayContainer wayContainer;
 
-    public WaySaverServiceImpl(BestWayContainer wayContainer) {
+    private final BestWayAccumulation bestWayAccumulation;
+
+    public WaySaverServiceImpl(BestWayContainer wayContainer, BestWayAccumulation bestWayAccumulation) {
         this.wayContainer = wayContainer;
+        this.bestWayAccumulation = bestWayAccumulation;
     }
 
     @Override
@@ -47,5 +52,24 @@ public class WaySaverServiceImpl implements WaySaverService {
         return bestWayCandidateDto;
     }
 
+    @Override
+    @GetMapping(value = "result/savePoint")
+    public void saveBestWay(String algorithm, String pointName) {
+        bestWayAccumulation.saveBestWay(algorithm, pointName);
+    }
 
+    @Override
+    @GetMapping(value = "result/getBestWayResult")
+    public ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getBestWayResult() {
+        final ConcurrentHashMap<String, CopyOnWriteArrayList<String>> result = bestWayAccumulation.getResult();
+        result.forEach((key, value) -> {
+            logger.info(String.format("------Algorithm %s ---------------------", key));
+            final String s1 = value.stream()
+                    .reduce((s, s2) -> String.format("%s->%s", s, s2))
+                    .get();
+            logger.info(s1);
+        });
+
+        return result;
+    }
 }
