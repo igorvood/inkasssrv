@@ -13,7 +13,6 @@ import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-import static com.sun.org.apache.xalan.internal.lib.ExsltMath.random;
 import static java.util.stream.Collectors.toMap;
 import static ru.sberbank.inkass.dto.TypePoint.INKASS_POINT;
 
@@ -94,7 +93,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
 
         sumForCalcChance = possibleWays.values().stream().flatMapToDouble(DoubleStream::of).sum();
 
-        final double random = random();
+        final double random = Math.random();
         double current = 0;
         Pair<PointDto, PointDto> lastPoint = null;
         // цикл вычислений следущей точки
