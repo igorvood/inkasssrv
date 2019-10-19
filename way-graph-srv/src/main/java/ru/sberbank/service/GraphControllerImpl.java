@@ -12,6 +12,7 @@ import ru.sberbank.inkass.dto.GraphDto;
 import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.property.StartPropertyDto;
 import ru.sberbank.service.fill.FillGraphService;
+import ru.sberbank.service.saver.BestWayAccumulation;
 import ru.sberbank.service.saver.BestWayContainer;
 import ru.sberbank.service.saver.GraphContainer;
 
@@ -30,11 +31,14 @@ public class GraphControllerImpl implements GraphController {
 
     private final BestWayContainer bestWayContainer;
 
-    public GraphControllerImpl(FillGraphService fillGraphService, StartPropertyDto property, GraphContainer graphContainer, BestWayContainer bestWayContainer) {
+    private final BestWayAccumulation bestWayAccumulation;
+
+    public GraphControllerImpl(FillGraphService fillGraphService, StartPropertyDto property, GraphContainer graphContainer, BestWayContainer bestWayContainer, BestWayAccumulation bestWayAccumulation) {
         this.fillGraphService = fillGraphService;
         this.property = property;
         this.graphContainer = graphContainer;
         this.bestWayContainer = bestWayContainer;
+        this.bestWayAccumulation = bestWayAccumulation;
     }
 
     @Override
@@ -57,6 +61,8 @@ public class GraphControllerImpl implements GraphController {
 
         graphContainer.saveGraph(fill);
         bestWayContainer.reset();
+        bestWayAccumulation.reset();
+
         return fill;
     }
 

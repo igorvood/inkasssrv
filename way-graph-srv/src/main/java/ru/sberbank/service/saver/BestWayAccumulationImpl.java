@@ -18,6 +18,7 @@ public class BestWayAccumulationImpl implements BestWayAccumulation {
     @Override
     public void reset() {
         this.bestWays = new ConcurrentHashMap<>();
+        logger.info(String.format("reset best way accumulation"));
     }
 
     @Override
@@ -28,7 +29,7 @@ public class BestWayAccumulationImpl implements BestWayAccumulation {
             bestWays.put(algorithm, strings);
         }
         strings.add(pointName);
-        logger.info(String.format("put point %s for algorithm %s", pointName, algorithm));
+//        logger.info(String.format("put point %s for algorithm %s", pointName, algorithm));
         return 0;
     }
 
