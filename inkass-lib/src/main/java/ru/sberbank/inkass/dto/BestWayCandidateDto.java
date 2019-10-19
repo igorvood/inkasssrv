@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class BestWayCandidateDto {
-    private final List<MutablePair<PointDto, PointDto>> wayPair;
+    transient private final List<MutablePair<PointDto, PointDto>> wayPair;
     private final double totalTime;
     private final double totalMoney;
 
