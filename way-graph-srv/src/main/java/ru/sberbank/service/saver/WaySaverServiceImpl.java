@@ -31,17 +31,19 @@ public class WaySaverServiceImpl implements WaySaverService {
     @Override
     @GetMapping(value = "result/getSuperWay")
     public BestWayCandidateDto getSuperWay() {
-        return wayContainer.getBestWayCandidateDtos().stream()
+        BestWayCandidateDto bestWayCandidateDto = wayContainer.getBestWayCandidateDtos().stream()
                 .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                 .orElse(null);
+        return bestWayCandidateDto;
     }
 
     @Override
     @GetMapping(value = "result/getWorstWay")
     public BestWayCandidateDto getWorstWay() {
-        return wayContainer.getBestWayCandidateDtos().stream()
+        BestWayCandidateDto bestWayCandidateDto = wayContainer.getBestWayCandidateDtos().stream()
                 .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                 .orElse(null);
+        return bestWayCandidateDto;
     }
 
 
