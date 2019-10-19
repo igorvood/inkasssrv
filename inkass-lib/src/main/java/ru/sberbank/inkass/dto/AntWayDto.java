@@ -30,7 +30,7 @@ public class AntWayDto {
     private PointDto bankPoint;
 
     private List<Double> shipping;
-    private List<PointDto> way;
+    //    private List<PointDto> way;
     private List<Pair<PointDto, PointDto>> wayPair;
     private Set<PointDto> notVisitedPoint;
     private Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap;
@@ -56,9 +56,9 @@ public class AntWayDto {
                         .filter(pointDto -> INKASS_POINT == pointDto.getTypePoint())
                         .map(PointDto::copy)
                         .collect(Collectors.toSet());
-        this.way = new ArrayList<>();
+//        this.way = new ArrayList<>();
         this.wayPair = new ArrayList<>();
-        this.way.add(currentPoint);
+//        this.way.add(currentPoint);
         this.roadMap = //roadMap;
                 roadMap.entrySet().stream()
                         .map(e -> Pair.of(
