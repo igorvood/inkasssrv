@@ -28,6 +28,8 @@ public class AntWayDto {
     @Setter
     private PointDto currentPoint;
     private PointDto bankPoint;
+
+    private List<Double> shipping;
     private List<PointDto> way;
     private List<Pair<PointDto, PointDto>> wayPair;
     private Set<PointDto> notVisitedPoint;
@@ -35,6 +37,7 @@ public class AntWayDto {
 
 
     public AntWayDto(Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap) {
+        this.shipping = new ArrayList<>();
         this.totalTime = 0L;
         this.totalMoney = 0L;
         this.moneyOnThisTrip = 0L;

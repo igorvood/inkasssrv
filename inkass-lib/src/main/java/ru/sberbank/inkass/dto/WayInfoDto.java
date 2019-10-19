@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import static java.lang.Math.pow;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,11 +20,12 @@ public class WayInfoDto {
     }
 
     public final double getPheromone() {
-        return pow(pheromone, 1);
+        return pheromone;
+//        return pow(pheromone, 1);
     }
 
     public final double getComplexWeight() {
-        return getWeightWay() * getPheromone();
+        return getWeightWay() * getPheromone() * getTrafficKoef();
     }
 
 
