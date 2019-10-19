@@ -7,4 +7,6 @@ public interface GraphContainer {
     void saveGraph(GraphDto graphDto);
 
     GraphDto getRefreshGraph();
+
+    GraphDto getGraph();
 }

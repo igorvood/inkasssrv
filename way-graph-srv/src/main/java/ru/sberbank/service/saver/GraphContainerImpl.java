@@ -19,4 +19,9 @@ public class GraphContainerImpl implements GraphContainer {
                 .forEach(e -> e.getWayInfo().setTrafficKoef(Math.random() * 2));
         return graphDto;
     }
+
+    @Override
+    public GraphDto getGraph() {
+        return graphDto;
+    }
 }
