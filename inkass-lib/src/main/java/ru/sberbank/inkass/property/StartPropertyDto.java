@@ -24,4 +24,6 @@ public class StartPropertyDto {
 
     private final double workingDayLength;
 
+    private final double speedTranspirationPheromone;
+
 }
