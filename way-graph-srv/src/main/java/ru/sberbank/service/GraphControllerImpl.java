@@ -12,6 +12,7 @@ import ru.sberbank.inkass.dto.GraphDto;
 import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.property.StartPropertyDto;
 import ru.sberbank.service.fill.FillGraphService;
+import ru.sberbank.service.saver.BestWayContainer;
 import ru.sberbank.service.saver.GraphContainer;
 
 import java.util.logging.Logger;
@@ -27,10 +28,13 @@ public class GraphControllerImpl implements GraphController {
 
     private final GraphContainer graphContainer;
 
-    public GraphControllerImpl(FillGraphService fillGraphService, StartPropertyDto property, GraphContainer graphContainer) {
+    private final BestWayContainer bestWayContainer;
+
+    public GraphControllerImpl(FillGraphService fillGraphService, StartPropertyDto property, GraphContainer graphContainer, BestWayContainer bestWayContainer) {
         this.fillGraphService = fillGraphService;
         this.property = property;
         this.graphContainer = graphContainer;
+        this.bestWayContainer = bestWayContainer;
     }
 
     @Override
@@ -49,6 +53,7 @@ public class GraphControllerImpl implements GraphController {
         fill = gson.fromJson(read, GraphDto.class);
 
         graphContainer.saveGraph(fill);
+        bestWayContainer.reset();
         return fill;
     }
 

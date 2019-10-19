@@ -8,9 +8,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 public class BestWayContainerImpl implements BestWayContainer {
 
-    private final CopyOnWriteArrayList<BestWayCandidateDto> bestWayCandidateDtos;
+    private CopyOnWriteArrayList<BestWayCandidateDto> bestWayCandidateDtos;
 
     public BestWayContainerImpl() {
+        bestWayCandidateDtos = new CopyOnWriteArrayList<>();
+    }
+
+    @Override
+    public void reset() {
         bestWayCandidateDtos = new CopyOnWriteArrayList<>();
     }
 

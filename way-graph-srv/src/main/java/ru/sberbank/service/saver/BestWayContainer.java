@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface BestWayContainer {
 
+    void reset();
+
     int saveBestWay(BestWayCandidateDto wayCandidate);
 
     List<BestWayCandidateDto> getBestWayCandidateDtos();
