@@ -15,7 +15,6 @@ import static java.util.stream.Collectors.toMap;
 import static ru.sberbank.inkass.dto.TypePoint.*;
 
 @Getter
-
 @ToString
 public class AntWayDto {
 
@@ -35,12 +34,26 @@ public class AntWayDto {
     private Set<PointDto> notVisitedPoint;
     private Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap;
 
+    public AntWayDto(Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap, MiniAntWayDto miniAntWayDto) {
+        this(roadMap);
+        this.wayPair = new ArrayList<>(miniAntWayDto.getWayPair());
+        this.totalTime = miniAntWayDto.getTotalTime();
+        this.moneyOnThisTrip = miniAntWayDto.getMoneyOnThisTrip();
+        this.currentPoint = miniAntWayDto.getCurrentPoint();
+        this.bankPoint = miniAntWayDto.getBankPoint();
+        final List<PointDto> collect = wayPair.stream()
+                .map(Pair::getRight)
+                .distinct()
+                .collect(Collectors.toList());
+        notVisitedPoint.removeAll(collect);
+    }
 
     public AntWayDto(Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap) {
         this.shipping = new ArrayList<>();
         this.totalTime = 0L;
         this.totalMoney = 0L;
         this.moneyOnThisTrip = 0L;
+        this.wayPair = new ArrayList<>();
 //        this.currentPoint =
         this.notVisitedPoint =
                 roadMap.keySet().stream()
@@ -57,7 +70,7 @@ public class AntWayDto {
                         .map(PointDto::copy)
                         .collect(Collectors.toSet());
 //        this.way = new ArrayList<>();
-        this.wayPair = new ArrayList<>();
+
 //        this.way.add(currentPoint);
         this.roadMap = //roadMap;
                 roadMap.entrySet().stream()
