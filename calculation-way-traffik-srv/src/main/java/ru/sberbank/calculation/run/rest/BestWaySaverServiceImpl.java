@@ -22,6 +22,10 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
     @Value("${connect.server.result.best_list}")
     private String bestList;
 
+    @Value("${connect.server.result.savePoint}")
+    private String savePoint;
+
+
     private final RestTemplate restTemplate;
 
     public BestWaySaverServiceImpl(RestTemplate restTemplate) {
@@ -35,5 +39,10 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
         final ResponseEntity<BestWayCandidateDto> requestEntity = new ResponseEntity<BestWayCandidateDto>(wayCandidate, HttpStatus.OK);
         final ResponseEntity<Integer> exchange = restTemplate.exchange(server + bestList, HttpMethod.POST, requestEntity, Integer.class);
         return exchange.getBody();
+    }
+
+    @Override
+    public void savePoint(String algorithm, String savePoint) {
+        final Integer forObject = restTemplate.getForObject(server + bestList, Integer.class, algorithm, savePoint);
     }
 }

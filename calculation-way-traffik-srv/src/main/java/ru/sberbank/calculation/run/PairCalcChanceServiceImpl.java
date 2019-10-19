@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 import ru.sberbank.inkass.dto.AntWayDto;
 import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.dto.WayInfoDto;
+import ru.sberbank.inkass.function.Util;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.Map;
@@ -13,7 +14,6 @@ import java.util.function.Function;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-import static com.sun.org.apache.xalan.internal.lib.ExsltMath.random;
 import static java.util.stream.Collectors.toMap;
 import static ru.sberbank.inkass.dto.TypePoint.INKASS_POINT;
 
@@ -94,7 +94,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
 
         sumForCalcChance = possibleWays.values().stream().flatMapToDouble(DoubleStream::of).sum();
 
-        final double random = random();
+        final double random = Math.random();
         double current = 0;
         Pair<PointDto, PointDto> lastPoint = null;
         // цикл вычислений следущей точки
@@ -120,31 +120,32 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
 
         //        delete
 
-        final PointDto right = nextPoint.getRight();
-        Assert.notNull(right, "registerPoint Point is empty");
+        final PointDto rightPoint = nextPoint.getRight();
+        Assert.notNull(rightPoint, "registerPoint Point is empty");
         Assert.notNull(antWayDto, "registerPoint antWayDto is empty");
-        if (nextPoint.getLeft().equals(right))
+        if (nextPoint.getLeft().equals(rightPoint))
             return false;
         final WayInfoDto wayInfoDto = antWayDto.getRoadMap().get(nextPoint);
         Assert.notNull(antWayDto, "registerPoint wayInfoDto is empty");
-        final double moneyOnThisTrip1 = antWayDto.getMoneyOnThisTrip();
-        double moneyOnThisTrip = 0;
-        if (!right.equals(antWayDto.getBankPoint()))
-            moneyOnThisTrip = moneyOnThisTrip1 + right.getSum();
-        else antWayDto.getShipping().add(moneyOnThisTrip1);
+        final double currentMoneyOnThisTrip = antWayDto.getMoneyOnThisTrip();
+        final PointDto bankPoint = antWayDto.getBankPoint();
+
+
+        double moneyOnThisTrip = Util.calcMoneyOnThisTrip(rightPoint, currentMoneyOnThisTrip, bankPoint);
 
         antWayDto.setMoneyOnThisTrip(moneyOnThisTrip);
-        antWayDto.setTotalMoney(antWayDto.getTotalMoney() + right.getSum());
-        antWayDto.setTotalTime(antWayDto.getTotalTime() + wayInfoDto.getTimeInWay() + right.getTimeInPoint());
+        antWayDto.setTotalMoney(antWayDto.getTotalMoney() + rightPoint.getSum());
+        antWayDto.setTotalTime(antWayDto.getTotalTime() + wayInfoDto.getTimeInWay() + rightPoint.getTimeInPoint());
         antWayDto.getWayPair().add(nextPoint);
-        Assert.isTrue(right.equals(antWayDto.getBankPoint()) || antWayDto.getNotVisitedPoint().remove(right), () -> String.format("Point all ready visited %s", right));
+        Assert.isTrue(rightPoint.equals(bankPoint) || antWayDto.getNotVisitedPoint().remove(rightPoint), () -> String.format("Point all ready visited %s", rightPoint));
 //        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
         Assert.isTrue(antWayDto.getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getMoneyOnThisTrip());
 //        if (antWayDto.getTotalTime() > workingDayLength)
-        Assert.isTrue((antWayDto.getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTotalTime());
-        antWayDto.setCurrentPoint(right);
+        Assert.isTrue((antWayDto.getTotalTime() < workingDayLength) || bankPoint.equals(rightPoint), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTotalTime());
+        antWayDto.setCurrentPoint(rightPoint);
         return true;
 
     }
+
 
 }

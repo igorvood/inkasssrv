@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import ru.sberbank.calculation.run.rest.BestWaySaverService;
 import ru.sberbank.calculation.run.rest.GraphService;
 import ru.sberbank.inkass.dto.*;
+import ru.sberbank.inkass.function.Util;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.Comparator;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -56,10 +56,14 @@ public class CalculationServiceImpl implements CalculationService {
         final int workingDayCount = prop.getWorkingDayCount();
         final int antCount = prop.getAntCount();
         final double speedTranspirationPheromone = prop.getSpeedTranspirationPheromone();
+        MiniAntWayDto currentMiniAntWayDto = new MiniAntWayDto();
+
+        CopyOnWriteArrayList<MiniAntWayDto> miniAntWayDtos = new CopyOnWriteArrayList<>();
         IntStream.range(0, workingDayCount)
-                .peek(value -> LOGGER.debug("Day num " + value))
+//                .peek(value -> LOGGER.debug("Day num " + value))
                 .forEach(value -> {
                     CopyOnWriteArrayList<BestWayCandidateDto> bestWays = new CopyOnWriteArrayList();
+
                     final Map<MutablePair<PointDto, PointDto>, DoubleSummaryStatistics> collect = IntStream.range(0, antCount)
                             .parallel()
                             .mapToObj(i -> new AntWayDto(fill.getInfoDtoTreeMap()))
@@ -71,6 +75,23 @@ public class CalculationServiceImpl implements CalculationService {
                                 if (bestWays.size() % 1000 == 0)
                                     LOGGER.info(String.format("add best way candidate %d", bestWays.size()));
                             })
+                            .peek(antWayDto -> miniAntWayDtos.add(
+                                    new MiniAntWayDto(antWayDto.getBankPoint()
+                                            , antWayDto.getTotalTime()
+                                            , antWayDto.getTotalMoney()
+                                            , antWayDto.getMoneyOnThisTrip()
+                                            , null
+                                            , antWayDto.getWayPair()
+                                    ))
+
+//                                    MiniAntWayDto.builder()
+//                                            .bankPoint(antWayDto.getBankPoint())
+//                                            .wayPair(antWayDto.getWayPair())
+//                                            .totalMoney(antWayDto.getTotalMoney())
+//                                            .totalTime(antWayDto.getTotalTime())
+//                                            .build()
+//                                    )
+                            )
                             .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto -> antWayDto.getWayPair().stream()
                                     .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
                             .collect(groupingBy(MutablePair::getLeft, mapping(MutablePair::getRight, summarizingDouble(value1 -> value1))));
@@ -84,17 +105,32 @@ public class CalculationServiceImpl implements CalculationService {
                     bestWaySaverService.saveBestWay(bestWayCandidateDto);
                     fill.getEdgeDtos().stream()
                             .parallel()
-                            .forEach(new Consumer<EdgeDto>() {
-                                @Override
-                                public void accept(EdgeDto q) {
-                                    final DoubleSummaryStatistics doubleSummaryStatistics = collect.get(Pair.of(q.getFrom(), q.getTo()));
-                                    if (doubleSummaryStatistics != null)
-                                        q.getWayInfo().setPheromone((q.getWayInfo().getPheromone() * speedTranspirationPheromone + doubleSummaryStatistics.getSum()));
-                                }
+                            .forEach(q -> {
+                                final DoubleSummaryStatistics doubleSummaryStatistics = collect.get(Pair.of(q.getFrom(), q.getTo()));
+                                if (doubleSummaryStatistics != null)
+                                    q.getWayInfo().setPheromone((q.getWayInfo().getPheromone() * speedTranspirationPheromone + doubleSummaryStatistics.getSum()));
                             });
 
                     LOGGER.debug(collect.size());
                 });
+        final MiniAntWayDto miniAntWayDto = miniAntWayDtos.stream()
+                .max(Comparator.comparingDouble(MiniAntWayDto::getTotalMoney))
+                .get();
+
+        final Pair<PointDto, PointDto> pointDtoPointDtoPair = miniAntWayDto.getWayPair().get(currentMiniAntWayDto.getWayPair().size());
+        final WayInfoDto wayInfoDto = fill.getInfoDtoTreeMap().get(pointDtoPointDtoPair);
+        final PointDto nextPoint = pointDtoPointDtoPair.getRight();
+
+        currentMiniAntWayDto.getWayPair().add(pointDtoPointDtoPair);
+
+        currentMiniAntWayDto.setCurrentPoint(nextPoint);
+        currentMiniAntWayDto.setTotalMoney(currentMiniAntWayDto.getTotalMoney() + nextPoint.getSum());
+        currentMiniAntWayDto.setTotalTime(currentMiniAntWayDto.getTotalTime() + wayInfoDto.getTimeInWay() + nextPoint.getTimeInPoint());
+        double moneyOnThisTrip = Util.calcMoneyOnThisTrip(nextPoint, currentMiniAntWayDto.getMoneyOnThisTrip(), miniAntWayDto.getBankPoint());
+        currentMiniAntWayDto.setMoneyOnThisTrip(moneyOnThisTrip);
+        currentMiniAntWayDto.setBankPoint(miniAntWayDto.getBankPoint());
+        bestWaySaverService.savePoint(String.valueOf(timeBeg), nextPoint.getName());
+
         LOGGER.debug("++++++++++++++++++++++++" /*+ collect.size()*/);
         final long l = new Date().getTime() - timeBeg;
 
