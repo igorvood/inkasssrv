@@ -15,6 +15,8 @@ public class WayInfoDto {
 
     private double pheromone;
 
+    private double trafficKoef;
+
     public final double getWeightWay() {
         return 1 / timeInWay;
     }

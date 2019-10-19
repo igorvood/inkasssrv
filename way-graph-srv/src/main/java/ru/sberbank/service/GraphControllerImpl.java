@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.inkass.dto.GraphDto;
 import ru.sberbank.inkass.property.StartPropertyDto;
 import ru.sberbank.service.fill.FillGraphService;
+import ru.sberbank.service.saver.GraphContainer;
 
 import java.util.logging.Logger;
 
@@ -19,16 +20,27 @@ public class GraphControllerImpl implements GraphController {
 
     private final StartPropertyDto property;
 
-    public GraphControllerImpl(FillGraphService fillGraphService, StartPropertyDto property) {
+    private final GraphContainer graphContainer;
+
+    public GraphControllerImpl(FillGraphService fillGraphService, StartPropertyDto property, GraphContainer graphContainer) {
         this.fillGraphService = fillGraphService;
         this.property = property;
+        this.graphContainer = graphContainer;
     }
 
     @Override
     @RequestMapping(value = "/graph/getNewGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
     public GraphDto getNewGraph() {
         logger.info("get new graph");
-        return fillGraphService.fill(property.getGraphSize());
+        final GraphDto fill = fillGraphService.fill(property.getGraphSize());
+        graphContainer.saveGraph(fill);
+        return fill;
+    }
+
+    @Override
+    @RequestMapping(value = "/graph/getRefreshedGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
+    public GraphDto getRefreshedGraph() {
+        return graphContainer.getRefreshGraph();
     }
 
     @RequestMapping(value = "/graph/getProp", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)

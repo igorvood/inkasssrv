@@ -43,7 +43,8 @@ public class FillGraphServiceImpl implements FillGraphService {
         final List<EdgeDto> edgeDtos = wayInfoDtoMap.getEdgeDtos();
         for (int i = 0; i < size; i++) {
             for (int j = i + 1; j < size; j++) {
-                final WayInfoDto wayInfoDto = (i == 0 && j == 1) ? new WayInfoDto(1, 1L) : new WayInfoDto(Math.random() * propertyDto.getMaxTimeInWay(), 1L);
+//                final WayInfoDto wayInfoDto = (i == 0 && j == 1) ? new WayInfoDto(1, 1L,1L) : new WayInfoDto(Math.random() * propertyDto.getMaxTimeInWay(), 1L, Math.random()*2);
+                final WayInfoDto wayInfoDto = new WayInfoDto(Math.random() * propertyDto.getMaxTimeInWay(), 1L, Math.random() * 2);
                 edgeDtos.add(new EdgeDto(pointDtos.get(i), pointDtos.get(j), wayInfoDto));
                 edgeDtos.add(new EdgeDto(pointDtos.get(j), pointDtos.get(i), wayInfoDto));
             }

@@ -60,8 +60,10 @@ public class AntWayDto {
                 roadMap.entrySet().stream()
                         .map(e -> Pair.of(
                                 e.getKey(),
-                                new WayInfoDto(e.getValue().getTimeInWay(),
-                                        e.getValue().getPheromone())))
+                                new WayInfoDto(e.getValue().getTimeInWay()
+                                        , e.getValue().getPheromone()
+                                        , e.getValue().getTrafficKoef()
+                                )))
                         .collect(toMap(Pair::getKey, Pair::getValue));
 
     }

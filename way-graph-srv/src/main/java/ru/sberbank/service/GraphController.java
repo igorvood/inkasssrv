@@ -6,4 +6,6 @@ public interface GraphController {
 
     GraphDto getNewGraph();
 
+    GraphDto getRefreshedGraph();
+
 }
