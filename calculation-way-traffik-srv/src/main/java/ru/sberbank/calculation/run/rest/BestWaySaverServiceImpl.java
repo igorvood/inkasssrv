@@ -15,11 +15,14 @@ import ru.sberbank.inkass.dto.BestWayCandidateDto;
 @PropertySource("classpath:connection.properties")
 public class BestWaySaverServiceImpl implements BestWaySaverService {
     private static final Logger logger = LoggerFactory.getLogger(BestWaySaverServiceImpl.class);
-    private final RestTemplate restTemplate;
+
     @Value("${connect.server}")
     private String server;
+
     @Value("${connect.server.result.best_list}")
     private String bestList;
+
+    private final RestTemplate restTemplate;
 
     public BestWaySaverServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

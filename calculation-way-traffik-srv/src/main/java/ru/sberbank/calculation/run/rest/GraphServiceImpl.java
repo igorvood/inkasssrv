@@ -13,14 +13,19 @@ import ru.sberbank.inkass.property.StartPropertyDto;
 @PropertySource("classpath:connection.properties")
 public class GraphServiceImpl implements GraphService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphServiceImpl.class);
-    private final RestTemplate restTemplate;
     @Value("${connect.server}")
     private String server;
+
     @Value("${connect.server.graph.new}")
     private String newGraph;
+
     @Value("${connect.server.graph.prop}")
     private String graphProp;
+
+
+    private static final Logger logger = LoggerFactory.getLogger(GraphServiceImpl.class);
+
+    private final RestTemplate restTemplate;
 
     public GraphServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
