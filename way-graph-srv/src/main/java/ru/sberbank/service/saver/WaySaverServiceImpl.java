@@ -1,10 +1,12 @@
 package ru.sberbank.service.saver;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
 
+import java.util.Comparator;
 import java.util.logging.Logger;
 
 
@@ -25,4 +27,22 @@ public class WaySaverServiceImpl implements WaySaverService {
         logger.info(String.valueOf(wayCandidate));
         return wayContainer.saveBestWay(wayCandidate);
     }
+
+    @Override
+    @GetMapping(value = "result/getSuperWay")
+    public BestWayCandidateDto getSuperWay() {
+        return wayContainer.getBestWayCandidateDtos().stream()
+                .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
+                .orElse(null);
+    }
+
+    @Override
+    @GetMapping(value = "result/getWorstWay")
+    public BestWayCandidateDto getWorstWay() {
+        return wayContainer.getBestWayCandidateDtos().stream()
+                .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
+                .orElse(null);
+    }
+
+
 }

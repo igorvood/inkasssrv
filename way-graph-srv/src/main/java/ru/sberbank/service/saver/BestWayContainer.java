@@ -1,21 +1,12 @@
 package ru.sberbank.service.saver;
 
-import org.springframework.stereotype.Service;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 
-@Service
-public class BestWayContainer {
+public interface BestWayContainer {
 
-    private final CopyOnWriteArrayList<BestWayCandidateDto> bestWayCandidateDtos;
+    int saveBestWay(BestWayCandidateDto wayCandidate);
 
-    public BestWayContainer() {
-        bestWayCandidateDtos = new CopyOnWriteArrayList<>();
-    }
-
-    public int saveBestWay(BestWayCandidateDto wayCandidate) {
-        bestWayCandidateDtos.add(wayCandidate);
-        return bestWayCandidateDtos.size();
-    }
+    List<BestWayCandidateDto> getBestWayCandidateDtos();
 }

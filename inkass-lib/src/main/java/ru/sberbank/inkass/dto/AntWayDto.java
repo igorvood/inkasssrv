@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
+import static ru.sberbank.inkass.dto.TypePoint.*;
 
 @Getter
 
@@ -42,12 +43,14 @@ public class AntWayDto {
                 roadMap.keySet().stream()
                         .map(Pair::getKey)
                         .peek(pointDto -> {
-                            if (pointDto.isBase()) {
+                            if (pointDto.getTypePoint() == GARAGE) {
                                 currentPoint = pointDto;
+                            }
+                            if (pointDto.getTypePoint() == BANK) {
                                 bankPoint = pointDto;
                             }
                         })
-                        .filter(pointDto -> !pointDto.isBase())
+                        .filter(pointDto -> INKASS_POINT == pointDto.getTypePoint())
                         .map(PointDto::copy)
                         .collect(Collectors.toSet());
         this.way = new ArrayList<>();

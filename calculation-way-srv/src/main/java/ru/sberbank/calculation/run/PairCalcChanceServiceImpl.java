@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import static com.sun.org.apache.xalan.internal.lib.ExsltMath.random;
 import static java.util.stream.Collectors.toMap;
+import static ru.sberbank.inkass.dto.TypePoint.INKASS_POINT;
 
 @Service
 public class PairCalcChanceServiceImpl implements CalcChanceService {
@@ -49,7 +50,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         return antWayDto.getNotVisitedPoint()
                 .stream()
                 //Все точки которые не банк
-                .filter(point -> !point.isBase())
+                .filter(point -> point.getTypePoint() == INKASS_POINT)
                 //все точки деньги из которых поместятся сейчас
                 .filter(point -> point.getSum() + antWayDto.getMoneyOnThisTrip() <= maxMoneyInAnt)
                 //все точки до которых успеем доехать, побыть там и если что вернуться в банк до окончания раб дня

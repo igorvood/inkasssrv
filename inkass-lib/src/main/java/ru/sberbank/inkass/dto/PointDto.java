@@ -17,7 +17,7 @@ public class PointDto implements Comparable<PointDto> {
     //    время инкассации
     private double timeInPoint;
     // признак того что точка является банком куда нужно все отвезти
-    private boolean isBase;
+    private TypePoint typePoint;
     //    сумма инкассации
     private double sum;
 
@@ -31,17 +31,17 @@ public class PointDto implements Comparable<PointDto> {
         }
         PointDto pointDto = (PointDto) o;
         return Double.compare(pointDto.timeInPoint, timeInPoint) == 0 &&
-                isBase == pointDto.isBase &&
+                TypePoint.BANK == pointDto.typePoint &&
                 name.equals(pointDto.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, timeInPoint, isBase);
+        return Objects.hash(name, timeInPoint, typePoint);
     }
 
     public PointDto copy() {
-        return new PointDto(name, timeInPoint, isBase, sum);
+        return new PointDto(name, timeInPoint, typePoint, sum);
     }
 
     @Override

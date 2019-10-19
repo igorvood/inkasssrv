@@ -11,6 +11,8 @@ import ru.sberbank.inkass.property.StartPropertyDto;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.sberbank.inkass.dto.TypePoint.*;
+
 
 @Service
 public class FillGraphServiceImpl implements FillGraphService {
@@ -26,9 +28,10 @@ public class FillGraphServiceImpl implements FillGraphService {
         List<PointDto> pointDtos = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             double sum = i == 0 ? 0 : Math.random() * propertyDto.getMaxSumInPoint();
-            sum = i == 1 ? 100_000_000 : sum;
+//            sum = i == 1 ? 100_000_000 : sum;
             pointDtos.add(PointDto.builder()
-                    .isBase(i == 0)
+                    .typePoint(i == 0 ? GARAGE : i == 1 ? BANK : INKASS_POINT)
+//                    .isBase(i == 0)
                     .name(i == 0 ? "Bank" : String.format("Point %d", i))
                     .sum(sum)
                     .timeInPoint(Math.random() * propertyDto.getMaxTimeInPoint())
