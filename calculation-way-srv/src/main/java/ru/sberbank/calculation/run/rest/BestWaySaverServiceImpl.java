@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +30,10 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
 
     @Override
     public int saveBestWay(BestWayCandidateDto wayCandidate) {
-        final ResponseEntity<Integer> exchange = restTemplate.exchange(server + bestList, HttpMethod.POST, null, Integer.class);
+//        final Integer forObject = restTemplate.getForObject(server + bestList, Integer.class, wayCandidate);
+//        return forObject;
+        final ResponseEntity<BestWayCandidateDto> requestEntity = new ResponseEntity<BestWayCandidateDto>(wayCandidate, HttpStatus.OK);
+        final ResponseEntity<Integer> exchange = restTemplate.exchange(server + bestList, HttpMethod.POST, requestEntity, Integer.class);
         return exchange.getBody();
     }
 }

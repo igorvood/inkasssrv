@@ -52,7 +52,7 @@ public class CalculationServiceImpl implements CalculationService {
 
         final long timeBeg = new Date().getTime();
 
-        LOGGER.debug("++++++++++++++++++++++++");
+        LOGGER.info("++++++++++++++++++++++++");
         final int workingDayCount = prop.getWorkingDayCount();
         final int antCount = prop.getAntCount();
         IntStream.range(0, workingDayCount)
@@ -63,7 +63,12 @@ public class CalculationServiceImpl implements CalculationService {
                             .parallel()
                             .mapToObj(i -> new AntWayDto(fill.getInfoDtoTreeMap()))
                             .map(q -> calcChanceService.runOneAnt(q))
-                            .peek(antWayDto -> bestWays.add(new BestWayCandidateDto(antWayDto.getWayPair(), antWayDto.getTotalTime(), antWayDto.getTotalMoney())))
+                            .peek(antWayDto -> {
+//                                List<MutablePair<PointDto, PointDto>> l = new ArrayList<>();
+//                                antWayDto.getWayPair().forEach(q->l.add(MutablePair.of(q.getLeft(),q.getRight())));
+                                bestWays.add(new BestWayCandidateDto(antWayDto.getTotalTime(), antWayDto.getTotalMoney()));
+//                                LOGGER.info(String.format("add best way candidate %d", bestWays.size()));
+                            })
                             .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto ->
                                     antWayDto.getWayPair().stream()
                                             .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
