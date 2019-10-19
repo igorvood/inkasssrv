@@ -23,17 +23,28 @@ public class PointDto implements Comparable<PointDto> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         PointDto pointDto = (PointDto) o;
         return Double.compare(pointDto.timeInPoint, timeInPoint) == 0 &&
-                TypePoint.BANK == pointDto.typePoint &&
-                name.equals(pointDto.name);
+                name.equals(pointDto.name) &&
+                typePoint == pointDto.typePoint;
     }
+
+
+    //    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
+//        PointDto pointDto = (PointDto) o;
+//        return Double.compare(pointDto.timeInPoint, timeInPoint) == 0 &&
+//                TypePoint.BANK == pointDto.typePoint &&
+//                name.equals(pointDto.name);
+//    }
 
     @Override
     public int hashCode() {
