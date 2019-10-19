@@ -14,7 +14,7 @@ public interface WaySaverService {
 
     BestWayCandidateDto getWorstWay();
 
-    int savePoint(String algorithm, String pointName);
+    int savePoint(PointForSaveDto pointForSaveDto);
 
     ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getBestWayResult();
 
