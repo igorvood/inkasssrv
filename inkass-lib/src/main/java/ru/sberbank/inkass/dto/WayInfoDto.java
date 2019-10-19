@@ -24,8 +24,9 @@ public class WayInfoDto {
 //        return pow(pheromone, 1);
     }
 
-    public final double getComplexWeight() {
-        return getWeightWay() * getPheromone() * getTrafficKoef();
+    public final double getComplexWeight(int antNum) {
+        final double v = antNum % 2 == 0 ? getPheromone() : 1;
+        return getWeightWay() * v * getTrafficKoef();
     }
 
 
