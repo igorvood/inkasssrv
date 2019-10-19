@@ -32,7 +32,7 @@ public class FillGraphServiceImpl implements FillGraphService {
             pointDtos.add(PointDto.builder()
                     .typePoint(i == 0 ? GARAGE : i == 1 ? BANK : INKASS_POINT)
 //                    .isBase(i == 0)
-                    .name(i == 0 ? "Bank" : String.format("Point %d", i))
+                    .name(i == 0 ? GARAGE.name() : i == 1 ? BANK.name() : String.format("Point %d", i))
                     .sum(sum)
                     .timeInPoint(Math.random() * propertyDto.getMaxTimeInPoint())
                     .build());
