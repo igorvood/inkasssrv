@@ -24,7 +24,8 @@ public class WaySaverServiceImpl implements WaySaverService {
     @Override
     @PostMapping(value = "result/saveBestWayCandidate")
     public int saveBestWay(@RequestBody BestWayCandidateDto wayCandidate) {
-        logger.info(String.format("Save best way %s", wayCandidate.getTotalMoney()));
+        logger.info(String.format("Save best way %s count %d", wayCandidate.getTotalMoney(), wayContainer.getBestWayCandidateDtos().size() + 1));
+
         return wayContainer.saveBestWay(wayCandidate);
     }
 
