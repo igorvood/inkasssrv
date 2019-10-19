@@ -7,4 +7,6 @@ public interface BestWaySaverService {
     int saveBestWay(BestWayCandidateDto wayCandidate);
 
     void savePoint(String algorithm, String savePoint);
+
+    void bestWayResult();
 }

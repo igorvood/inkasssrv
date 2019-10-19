@@ -18,6 +18,7 @@ import static ru.sberbank.inkass.dto.TypePoint.*;
 @ToString
 public class AntWayDto {
 
+    private int antNum;
     @Setter
     private double totalTime;
     @Setter
@@ -34,13 +35,13 @@ public class AntWayDto {
     private Set<PointDto> notVisitedPoint;
     private Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap;
 
-    public AntWayDto(Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap, MiniAntWayDto miniAntWayDto) {
-        this(roadMap);
+    public AntWayDto(int antNum, Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap, MiniAntWayDto miniAntWayDto) {
+        this(antNum, roadMap);
         this.wayPair = new ArrayList<>(miniAntWayDto.getWayPair());
         this.totalTime = miniAntWayDto.getTotalTime();
         this.moneyOnThisTrip = miniAntWayDto.getMoneyOnThisTrip();
-        this.currentPoint = miniAntWayDto.getCurrentPoint();
-        this.bankPoint = miniAntWayDto.getBankPoint();
+        this.currentPoint = nvl(miniAntWayDto.getCurrentPoint(), this.currentPoint);
+        this.bankPoint = nvl(miniAntWayDto.getBankPoint(), this.bankPoint);
         final List<PointDto> collect = wayPair.stream()
                 .map(Pair::getRight)
                 .distinct()
@@ -48,7 +49,8 @@ public class AntWayDto {
         notVisitedPoint.removeAll(collect);
     }
 
-    public AntWayDto(Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap) {
+    public AntWayDto(int antNum, Map<Pair<PointDto, PointDto>, WayInfoDto> roadMap) {
+        this.antNum = antNum;
         this.shipping = new ArrayList<>();
         this.totalTime = 0L;
         this.totalMoney = 0L;
@@ -82,6 +84,10 @@ public class AntWayDto {
                                 )))
                         .collect(toMap(Pair::getKey, Pair::getValue));
 
+    }
+
+    private <T> T nvl(T currentPoint, T currentPoint1) {
+        return currentPoint == null ? currentPoint1 : currentPoint;
     }
 
 }

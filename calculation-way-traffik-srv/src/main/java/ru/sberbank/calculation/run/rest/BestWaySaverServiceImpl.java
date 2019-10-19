@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
+import ru.sberbank.inkass.dto.PointForSaveDto;
 
 @Service
 @PropertySource("classpath:connection.properties")
@@ -20,10 +21,13 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
     private String server;
 
     @Value("${connect.server.result.best_list}")
-    private String bestList;
+    private String bestListUrl;
 
     @Value("${connect.server.result.savePoint}")
-    private String savePoint;
+    private String savePointUrl;
+
+    @Value("${connect.server.result.bestWayResult}")
+    private String bestWayResultUrl;
 
 
     private final RestTemplate restTemplate;
@@ -34,15 +38,23 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
 
     @Override
     public int saveBestWay(BestWayCandidateDto wayCandidate) {
-//        final Integer forObject = restTemplate.getForObject(server + bestList, Integer.class, wayCandidate);
+//        final Integer forObject = restTemplate.getForObject(server + bestListUrl, Integer.class, wayCandidate);
 //        return forObject;
         final ResponseEntity<BestWayCandidateDto> requestEntity = new ResponseEntity<BestWayCandidateDto>(wayCandidate, HttpStatus.OK);
-        final ResponseEntity<Integer> exchange = restTemplate.exchange(server + bestList, HttpMethod.POST, requestEntity, Integer.class);
+        final ResponseEntity<Integer> exchange = restTemplate.exchange(server + bestListUrl, HttpMethod.POST, requestEntity, Integer.class);
         return exchange.getBody();
     }
 
     @Override
     public void savePoint(String algorithm, String savePoint) {
-        final Integer forObject = restTemplate.getForObject(server + bestList, Integer.class, algorithm, savePoint);
+        final ResponseEntity<PointForSaveDto> requestEntity = new ResponseEntity<>(new PointForSaveDto(algorithm, savePoint), HttpStatus.OK);
+        final ResponseEntity<Integer> exchange = restTemplate.exchange(server + savePointUrl, HttpMethod.POST, requestEntity, Integer.class);
+
+//        final Integer forObject = restTemplate.getForObject(server + savePointUrl, Integer.class, algorithm, savePoint);
+    }
+
+    @Override
+    public void bestWayResult() {
+        restTemplate.getForObject(server + bestWayResultUrl, String.class);
     }
 }

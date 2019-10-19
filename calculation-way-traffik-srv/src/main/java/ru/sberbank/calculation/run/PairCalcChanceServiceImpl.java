@@ -11,6 +11,7 @@ import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -55,13 +56,24 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
                 //все точки деньги из которых поместятся сейчас
                 .filter(point -> point.getSum() + antWayDto.getMoneyOnThisTrip() <= maxMoneyInAnt)
                 //все точки до которых успеем доехать, побыть там и если что вернуться в банк до окончания раб дня
-                .filter(point ->
-                        antWayDto.getTotalTime()
-                                + point.getTimeInPoint()
-                                + antWayDto.getRoadMap().get(Pair.of(antWayDto.getCurrentPoint(), point)).getTimeInWay()
-                                + antWayDto.getRoadMap().get(Pair.of(point, antWayDto.getBankPoint())).getTimeInWay()
-                                + antWayDto.getBankPoint().getTimeInPoint()
-                                < workingDayLength);
+                .filter(new Predicate<PointDto>() {
+                    @Override
+                    public boolean test(PointDto point) {
+
+                        boolean b = false;
+                        try {
+                            b = antWayDto.getTotalTime()
+                                    + point.getTimeInPoint()
+                                    + antWayDto.getRoadMap().get(Pair.of(antWayDto.getCurrentPoint(), point)).getTimeInWay()
+                                    + antWayDto.getRoadMap().get(Pair.of(point, antWayDto.getBankPoint())).getTimeInWay()
+                                    + antWayDto.getBankPoint().getTimeInPoint()
+                                    < workingDayLength;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        return b;
+                    }
+                });
     }
 
     private Pair<PointDto, PointDto> getNextPoint(AntWayDto antWayDto) {
@@ -76,7 +88,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
                 .map(new Function<Pair<PointDto, PointDto>, Pair<Pair<PointDto, PointDto>, Double>>() {
                     @Override
                     public Pair<Pair<PointDto, PointDto>, Double> apply(Pair<PointDto, PointDto> pointDtoPointDtoPair) {
-                        return Pair.of(pointDtoPointDtoPair, roadMap.get(pointDtoPointDtoPair).getComplexWeight() * pointDtoPointDtoPair.getRight().getSum());
+                        return Pair.of(pointDtoPointDtoPair, roadMap.get(pointDtoPointDtoPair).getComplexWeight(antWayDto.getAntNum()) * pointDtoPointDtoPair.getRight().getSum());
                     }
                 })
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -84,7 +96,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
             final Pair<PointDto, PointDto> of = Pair.of(antWayDto.getCurrentPoint(), antWayDto.getBankPoint());
 
             try {
-                final double complexWeight = roadMap.get(of).getComplexWeight();
+                final double complexWeight = roadMap.get(of).getComplexWeight(antWayDto.getAntNum());
                 possibleWays.put(of, complexWeight);
             } catch (Exception e) {
                 return Pair.of(antWayDto.getCurrentPoint(), antWayDto.getBankPoint());

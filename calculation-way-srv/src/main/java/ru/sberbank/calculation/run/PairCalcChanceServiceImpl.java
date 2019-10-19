@@ -75,7 +75,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
                 .map(new Function<Pair<PointDto, PointDto>, Pair<Pair<PointDto, PointDto>, Double>>() {
                     @Override
                     public Pair<Pair<PointDto, PointDto>, Double> apply(Pair<PointDto, PointDto> pointDtoPointDtoPair) {
-                        return Pair.of(pointDtoPointDtoPair, roadMap.get(pointDtoPointDtoPair).getComplexWeight() * pointDtoPointDtoPair.getRight().getSum());
+                        return Pair.of(pointDtoPointDtoPair, roadMap.get(pointDtoPointDtoPair).getComplexWeight(antWayDto.getAntNum()) * pointDtoPointDtoPair.getRight().getSum());
                     }
                 })
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -83,7 +83,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
             final Pair<PointDto, PointDto> of = Pair.of(antWayDto.getCurrentPoint(), antWayDto.getBankPoint());
 
             try {
-                final double complexWeight = roadMap.get(of).getComplexWeight();
+                final double complexWeight = roadMap.get(of).getComplexWeight(antWayDto.getAntNum());
                 possibleWays.put(of, complexWeight);
             } catch (Exception e) {
                 return Pair.of(antWayDto.getCurrentPoint(), antWayDto.getBankPoint());
