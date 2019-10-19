@@ -37,17 +37,16 @@ public class GraphControllerImpl implements GraphController {
     @RequestMapping(value = "/graph/getNewGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
     public GraphDto getNewGraph() {
         logger.info("get new graph");
-        final GraphDto fill = fillGraphService.fill(property.getGraphSize());
+        GraphDto fill = fillGraphService.fill(property.getGraphSize());
 
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        final String s = gson.toJson(fill);
-        FileService.write("outGraph.gson", s);
+
+//        final String s = gson.toJson(fill);
+//        FileService.write("outGraph.gson", s);
 //        ------------------------------------
 
-/*
         final String read = FileService.read("outGraph.gson");
         fill = gson.fromJson(read, GraphDto.class);
-*/
 
         graphContainer.saveGraph(fill);
         return fill;
