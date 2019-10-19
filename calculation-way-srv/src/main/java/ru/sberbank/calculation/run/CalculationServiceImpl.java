@@ -1,15 +1,13 @@
 package ru.sberbank.calculation.run;
 
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import ru.sberbank.calculation.run.rest.BestWaySaverService;
 import ru.sberbank.calculation.run.rest.GraphService;
-import ru.sberbank.inkass.dto.AntWayDto;
-import ru.sberbank.inkass.dto.BestWayCandidateDto;
-import ru.sberbank.inkass.dto.GraphDto;
-import ru.sberbank.inkass.dto.PointDto;
+import ru.sberbank.inkass.dto.*;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
 import java.util.Comparator;
@@ -17,6 +15,7 @@ import java.util.Date;
 import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -77,7 +76,14 @@ public class CalculationServiceImpl implements CalculationService {
                             .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                             .get();
                     bestWaySaverService.saveBestWay(bestWayCandidateDto);
-
+                    fill.getEdgeDtos().stream()
+                            .parallel()
+                            .forEach(new Consumer<EdgeDto>() {
+                                @Override
+                                public void accept(EdgeDto q) {
+                                    q.getWayInfo().setPheromone(collect.get(Pair.of(q.getFrom(), q.getTo())).getAverage());
+                                }
+                            });
 //                    final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
 //                            .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
 //                            .get();

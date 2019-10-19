@@ -1,10 +1,13 @@
 package ru.sberbank.service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import ru.sberbank.infrastructure.FileService;
 import ru.sberbank.inkass.dto.GraphDto;
 import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.property.StartPropertyDto;
@@ -35,6 +38,17 @@ public class GraphControllerImpl implements GraphController {
     public GraphDto getNewGraph() {
         logger.info("get new graph");
         final GraphDto fill = fillGraphService.fill(property.getGraphSize());
+
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        final String s = gson.toJson(fill);
+        FileService.write("outGraph.gson", s);
+//        ------------------------------------
+
+/*
+        final String read = FileService.read("outGraph.gson");
+        fill = gson.fromJson(read, GraphDto.class);
+*/
+
         graphContainer.saveGraph(fill);
         return fill;
     }
