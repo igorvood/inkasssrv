@@ -54,7 +54,7 @@ public class WaySaverServiceImpl implements WaySaverService {
 
     @Override
     @GetMapping(value = "result/savePoint")
-    public int saveBestWay(String algorithm, String pointName) {
+    public int savePoint(String algorithm, String pointName) {
         bestWayAccumulation.saveBestWay(algorithm, pointName);
         return 0;
     }
