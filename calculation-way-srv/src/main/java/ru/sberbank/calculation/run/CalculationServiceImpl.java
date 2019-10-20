@@ -11,10 +11,7 @@ import ru.sberbank.calculation.run.rest.GraphService;
 import ru.sberbank.inkass.dto.*;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.DoubleSummaryStatistics;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -60,9 +57,13 @@ public class CalculationServiceImpl implements CalculationService {
                 .peek(value -> LOGGER.debug("Day num " + value))
                 .forEach(value -> {
                     CopyOnWriteArrayList<BestWayCandidateDto> bestWays = new CopyOnWriteArrayList();
+                    final PointDto bankPoint = AntWayDto.getBankPoint(fill.getInfoDtoTreeMap());
+                    final PointDto gragePoint = AntWayDto.getGragePoint(fill.getInfoDtoTreeMap());
+                    final Set<PointDto> notVisitedPoint = AntWayDto.getNotVisitedPoint(fill.getInfoDtoTreeMap());
+
                     final Map<MutablePair<PointDto, PointDto>, DoubleSummaryStatistics> collect = IntStream.range(0, antCount)
                             .parallel()
-                            .mapToObj(i -> new AntWayDto(fill.getInfoDtoTreeMap()))
+                            .mapToObj(i -> new AntWayDto(i, fill.getInfoDtoTreeMap(), bankPoint, gragePoint, notVisitedPoint))
                             .map(q -> calcChanceService.runOneAnt(q))
                             .peek(antWayDto -> {
 //                                List<MutablePair<PointDto, PointDto>> l = new ArrayList<>();

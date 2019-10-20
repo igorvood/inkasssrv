@@ -11,16 +11,14 @@ import ru.sberbank.inkass.dto.*;
 import ru.sberbank.inkass.function.Util;
 import ru.sberbank.inkass.property.StartPropertyDto;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.DoubleSummaryStatistics;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
+import static ru.sberbank.inkass.dto.AntWayDto.nvl;
 
 
 @Service
@@ -62,13 +60,21 @@ public class CalculationServiceImpl implements CalculationService {
         do {
             CopyOnWriteArrayList<MiniAntWayDto> miniAntWayDtos = new CopyOnWriteArrayList<>();
             IntStream.range(0, workingDayCount)
-//                .peek(value -> LOGGER.debug("Day num " + value))
+                    .peek(value -> LOGGER.info("Day num " + value))
                     .forEach(value -> {
 //                        CopyOnWriteArrayList<BestWayCandidateDto> bestWays = new CopyOnWriteArrayList();
+//============================================Дневной цикл==============================
+                        final PointDto bankPoint = AntWayDto.getBankPoint(fill.getInfoDtoTreeMap());
+                        final PointDto currentPoint = nvl(currentMiniAntWayDto.getCurrentPoint(), AntWayDto.getGragePoint(fill.getInfoDtoTreeMap()));
+                        final Set<PointDto> visitedPoint = currentMiniAntWayDto.getWayPair().stream()
+                                .map(q -> q.getRight())
+                                .collect(toSet());
+                        final Set<PointDto> notVisitedPoint = AntWayDto.getNotVisitedPoint(fill.getInfoDtoTreeMap(), visitedPoint);
 
                         final Map<MutablePair<PointDto, PointDto>, DoubleSummaryStatistics> collect = IntStream.range(0, antCount)
                                 .parallel()
-                                .mapToObj(i -> new AntWayDto(i, fill.getInfoDtoTreeMap(), currentMiniAntWayDto))
+
+                                .mapToObj(i -> new AntWayDto(i, fill.getInfoDtoTreeMap(), bankPoint, currentPoint, notVisitedPoint, currentMiniAntWayDto))
                                 .map(q -> calcChanceService.runOneAnt(q))
 //                                .peek(antWayDto -> {
 //                                    bestWays.add(new BestWayCandidateDto(antWayDto.getTotalTime(), antWayDto.getTotalMoney()));
