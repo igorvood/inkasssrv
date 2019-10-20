@@ -149,6 +149,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         antWayDto.setTotalMoney(antWayDto.getTotalMoney() + rightPoint.getSum());
         antWayDto.setTotalTime(antWayDto.getTotalTime() + wayInfoDto.getTimeInWay() + rightPoint.getTimeInPoint());
         antWayDto.getWayPair().add(nextPoint);
+//        if (!(rightPoint.equals(bankPoint) || antWayDto.getNotVisitedPoint().remove(rightPoint)))
         Assert.isTrue(rightPoint.equals(bankPoint) || antWayDto.getNotVisitedPoint().remove(rightPoint), () -> String.format("Point all ready visited %s", rightPoint));
 //        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
         Assert.isTrue(antWayDto.getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getMoneyOnThisTrip());
