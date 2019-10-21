@@ -19,11 +19,13 @@ public class AntWayDto {
     private static final Log LOGGER = LogFactory.getLog(AntWayDto.class);
     private int antNum;
     @Setter
-    private double totalTime;
-    @Setter
-    private double totalMoney;
-    @Setter
-    private double moneyOnThisTrip;
+    private AntTripTelemetryDto tripTelemetry;
+//    private double totalTime;
+//    @Setter
+//    private double totalMoney;
+//    @Setter
+//    private double moneyOnThisTrip;
+
     @Setter
     private PointDto currentPoint;
     private PointDto bankPoint;
@@ -55,9 +57,11 @@ public class AntWayDto {
         this.currentPoint = currentPoint;
         this.bankPoint = bankPoint;
         this.shipping = new ArrayList<>();
-        this.totalTime = 0L;
-        this.totalMoney = 0L;
-        this.moneyOnThisTrip = 0L;
+        this.tripTelemetry = AntTripTelemetryDto.builder()
+                .totalMoney(0L)
+                .moneyOnThisTrip(0L)
+                .totalTime(0L)
+                .build();
         this.wayPair = new ArrayList<>();
     }
 
@@ -71,9 +75,11 @@ public class AntWayDto {
     ) {
         this(antNum, roadMap, bankPoint, currentPoint, notVisitedPoint);
         this.wayPair = new ArrayList<>(miniAntWayDto.getWayPair());
-
-        this.totalTime = miniAntWayDto.getTotalTime();
-        this.moneyOnThisTrip = miniAntWayDto.getMoneyOnThisTrip();
+        this.tripTelemetry = AntTripTelemetryDto.builder()
+                .totalMoney(miniAntWayDto.getTotalMoney())
+                .moneyOnThisTrip(miniAntWayDto.getMoneyOnThisTrip())
+                .totalTime(miniAntWayDto.getTotalTime())
+                .build();
         this.currentPoint = nvl(miniAntWayDto.getCurrentPoint(), this.currentPoint);
         this.bankPoint = nvl(miniAntWayDto.getBankPoint(), this.bankPoint);
     }

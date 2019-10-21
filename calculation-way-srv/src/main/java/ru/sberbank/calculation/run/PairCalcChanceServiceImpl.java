@@ -44,7 +44,7 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         final double maxMoneyInAnt = prop.getMaxMoneyInAnt();
         final double workingDayLength = prop.getWorkingDayLength();
 
-        if (!(antWayDto.getMoneyOnThisTrip() < maxMoneyInAnt)) {
+        if (!(antWayDto.getTripTelemetry().getMoneyOnThisTrip() < maxMoneyInAnt)) {
             return Stream.of(antWayDto.getBankPoint());
         }
         return antWayDto.getNotVisitedPoint()
@@ -52,10 +52,10 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
                 //Все точки которые не банк
                 .filter(point -> point.getTypePoint() == INKASS_POINT)
                 //все точки деньги из которых поместятся сейчас
-                .filter(point -> point.getSum() + antWayDto.getMoneyOnThisTrip() <= maxMoneyInAnt)
+                .filter(point -> point.getSum() + antWayDto.getTripTelemetry().getMoneyOnThisTrip() <= maxMoneyInAnt)
                 //все точки до которых успеем доехать, побыть там и если что вернуться в банк до окончания раб дня
                 .filter(point ->
-                        antWayDto.getTotalTime()
+                        antWayDto.getTripTelemetry().getTotalTime()
                                 + point.getTimeInPoint()
                                 + antWayDto.getRoadMap().get(Pair.of(antWayDto.getCurrentPoint(), point)).getTimeInWay()
                                 + antWayDto.getRoadMap().get(Pair.of(point, antWayDto.getBankPoint())).getTimeInWay()
@@ -126,21 +126,21 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
             return false;
         final WayInfoDto wayInfoDto = antWayDto.getRoadMap().get(nextPoint);
         Assert.notNull(antWayDto, "registerPoint wayInfoDto is empty");
-        final double moneyOnThisTrip1 = antWayDto.getMoneyOnThisTrip();
+        final double moneyOnThisTrip1 = antWayDto.getTripTelemetry().getMoneyOnThisTrip();
         double moneyOnThisTrip = 0;
         if (!right.equals(antWayDto.getBankPoint()))
             moneyOnThisTrip = moneyOnThisTrip1 + right.getSum();
         else antWayDto.getShipping().add(moneyOnThisTrip1);
 
-        antWayDto.setMoneyOnThisTrip(moneyOnThisTrip);
-        antWayDto.setTotalMoney(antWayDto.getTotalMoney() + right.getSum());
-        antWayDto.setTotalTime(antWayDto.getTotalTime() + wayInfoDto.getTimeInWay() + right.getTimeInPoint());
+        antWayDto.getTripTelemetry().setMoneyOnThisTrip(moneyOnThisTrip);
+        antWayDto.getTripTelemetry().setTotalMoney(antWayDto.getTripTelemetry().getTotalMoney() + right.getSum());
+        antWayDto.getTripTelemetry().setTotalTime(antWayDto.getTripTelemetry().getTotalTime() + wayInfoDto.getTimeInWay() + right.getTimeInPoint());
         antWayDto.getWayPair().add(nextPoint);
         Assert.isTrue(right.equals(antWayDto.getBankPoint()) || antWayDto.getNotVisitedPoint().remove(right), () -> String.format("Point all ready visited %s", right));
 //        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
-        Assert.isTrue(antWayDto.getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getMoneyOnThisTrip());
+        Assert.isTrue(antWayDto.getTripTelemetry().getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getTripTelemetry().getMoneyOnThisTrip());
 //        if (antWayDto.getTotalTime() > workingDayLength)
-        Assert.isTrue((antWayDto.getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTotalTime());
+        Assert.isTrue((antWayDto.getTripTelemetry().getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTripTelemetry().getTotalTime());
         antWayDto.setCurrentPoint(right);
         return true;
 

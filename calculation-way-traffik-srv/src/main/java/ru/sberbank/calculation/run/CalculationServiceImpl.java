@@ -84,9 +84,9 @@ public class CalculationServiceImpl implements CalculationService {
                                 .peek(antWayDto -> {
                                             miniAntWayDtos.add(
                                                     new MiniAntWayDto(antWayDto.getBankPoint()
-                                                            , antWayDto.getTotalTime()
-                                                            , antWayDto.getTotalMoney()
-                                                            , antWayDto.getMoneyOnThisTrip()
+                                                            , antWayDto.getTripTelemetry().getTotalTime()
+                                                            , antWayDto.getTripTelemetry().getTotalMoney()
+                                                            , antWayDto.getTripTelemetry().getMoneyOnThisTrip()
                                                             , null
                                                             , antWayDto.getWayPair()
                                                     ));
@@ -103,7 +103,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 )
                                 .
                                         flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto -> antWayDto.getWayPair().stream()
-                                                .map(q -> new MutablePair(q, antWayDto.getTotalMoney())))
+                                                .map(q -> new MutablePair(q, antWayDto.getTripTelemetry().getTotalMoney())))
                                 .collect(groupingBy(MutablePair::getLeft, mapping(MutablePair::getRight, summarizingDouble(value1 -> value1))));
 //                        final BestWayCandidateDto bestWayCandidateDto = bestWays.stream()
 //                                .max(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
