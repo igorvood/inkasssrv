@@ -2,17 +2,21 @@ package ru.sberbank.service.saver;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
+import ru.sberbank.inkass.dto.AntTripTelemetryDto;
 import ru.sberbank.inkass.dto.AntWayDto;
+import ru.sberbank.inkass.dto.EdgeDto;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
+import static ru.sberbank.inkass.dto.TypePoint.GARAGE;
+
 @Service
 public class BestWayAccumulationImpl implements BestWayAccumulation {
     private static final Logger logger = Logger.getLogger(BestWayAccumulationImpl.class.getName());
     private final GraphContainer graphContainer;
-    private ConcurrentHashMap<String, Pair<CopyOnWriteArrayList<String>, AntWayDto>> bestWays;
+    private ConcurrentHashMap<String, Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto>> bestWays;
 
     public BestWayAccumulationImpl(GraphContainer graphContainer) {
         this.graphContainer = graphContainer;
@@ -22,15 +26,20 @@ public class BestWayAccumulationImpl implements BestWayAccumulation {
     @Override
     public void reset() {
         this.bestWays = new ConcurrentHashMap<>();
-        logger.info(String.format("reset best way accumulation"));
+        logger.info("reset best way accumulation");
     }
 
     @Override
     public int saveBestWay(String algorithm, String pointName) {
-        final Pair<CopyOnWriteArrayList<String>, AntWayDto> antWayDtoPair = bestWays.get(algorithm);
+        final Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto> antWayDtoPair = bestWays.get(algorithm);
         CopyOnWriteArrayList<String> strings = antWayDtoPair.getLeft();
         if (strings == null) {
+            final EdgeDto edgeDto1 = graphContainer.getGraph().getEdgeDtos().stream()
+                    .filter(edgeDto -> edgeDto.getFrom().getTypePoint() == GARAGE && edgeDto.getTo().getName().equals(pointName))
+                    .findFirst()
+                    .orElse(null);
             strings = new CopyOnWriteArrayList<>();
+            new AntWayDto(bestWays.size())
             bestWays.put(algorithm, Pair.of(strings, null));
         }
         strings.add(pointName);
@@ -39,7 +48,9 @@ public class BestWayAccumulationImpl implements BestWayAccumulation {
     }
 
     @Override
-    public ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getResult() {
+    public ConcurrentHashMap<String, Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto>> getResult() {
+
         return bestWays;
+
     }
 }
