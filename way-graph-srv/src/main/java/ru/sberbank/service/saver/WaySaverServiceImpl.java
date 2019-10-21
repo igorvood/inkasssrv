@@ -1,9 +1,11 @@
 package ru.sberbank.service.saver;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.sberbank.inkass.dto.AntTripTelemetryDto;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
 import ru.sberbank.inkass.dto.PointForSaveDto;
 
@@ -62,16 +64,18 @@ public class WaySaverServiceImpl implements WaySaverService {
 
     @Override
     @GetMapping(value = "result/getBestWayResult")
-    public ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getBestWayResult() {
-        final ConcurrentHashMap<String, CopyOnWriteArrayList<String>> result = bestWayAccumulation.getResult();
+    public ConcurrentHashMap<String, Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto>> getBestWayResult() {
+        final ConcurrentHashMap<String, Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto>> result = bestWayAccumulation.getResult();
+
         result.forEach((key, value) -> {
             logger.info(String.format("------Algorithm %s ---------------------", key));
-            final String s1 = value.stream()
+            final String s1 = value.getLeft().stream()
                     .reduce((s, s2) -> String.format("%s->%s", s, s2))
                     .get();
             logger.info(s1);
         });
 
         return result;
+
     }
 }

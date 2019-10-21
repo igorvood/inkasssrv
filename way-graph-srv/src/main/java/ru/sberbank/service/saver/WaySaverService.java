@@ -1,5 +1,7 @@
 package ru.sberbank.service.saver;
 
+import org.apache.commons.lang3.tuple.Pair;
+import ru.sberbank.inkass.dto.AntTripTelemetryDto;
 import ru.sberbank.inkass.dto.BestWayCandidateDto;
 import ru.sberbank.inkass.dto.PointForSaveDto;
 
@@ -16,6 +18,6 @@ public interface WaySaverService {
 
     int savePoint(PointForSaveDto pointForSaveDto);
 
-    ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getBestWayResult();
+    ConcurrentHashMap<String, Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto>> getBestWayResult();
 
 }
