@@ -47,7 +47,7 @@ public class GraphControllerImpl implements GraphController {
         logger.info("get new graph");
         GraphDto fill = fillGraphService.fill(property.getGraphSize());
 
-        final Gson gson = new GsonBuilder()./*setPrettyPrinting().*/create();
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 //        final String s = gson.toJson(fill);
 //        FileService.write("outGraph.gson", s);
@@ -79,5 +79,17 @@ public class GraphControllerImpl implements GraphController {
         return property;
     }
 
+    @Override
+    @RequestMapping(value = "/graph/reciveNewGraphSocket", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.PUT)
+    public boolean reciveNewGraphSocket(@RequestBody GraphDto graphDto) {
+        graphContainer.saveGraph(graphDto);
+        return true;
+    }
+
+    @Override
+//    @RequestMapping(value = "/graph/getNewGraph", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
+    public GraphDto getNewGraphSocket(GraphDto graphDto) {
+        return graphContainer.getGraph();
+    }
 }
 
