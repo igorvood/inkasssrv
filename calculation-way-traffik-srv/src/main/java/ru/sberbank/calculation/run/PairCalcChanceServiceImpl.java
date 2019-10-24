@@ -62,10 +62,15 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
 
                         boolean b = false;
                         try {
+                            WayInfoDto wayInfoDtoPointPoint = antWayDto.getRoadMap().get(Pair.of(antWayDto.getCurrentPoint(), point));
+                            WayInfoDto wayInfoDtoPointBank = antWayDto.getRoadMap().get(Pair.of(point, antWayDto.getBankPoint()));
+                            if (wayInfoDtoPointPoint == null || wayInfoDtoPointBank == null) {
+                                return false;
+                            }
                             b = antWayDto.getTripTelemetry().getTotalTime()
                                     + point.getTimeInPoint()
-                                    + antWayDto.getRoadMap().get(Pair.of(antWayDto.getCurrentPoint(), point)).getTimeInWay()
-                                    + antWayDto.getRoadMap().get(Pair.of(point, antWayDto.getBankPoint())).getTimeInWay()
+                                    + wayInfoDtoPointPoint.getTimeInWay()
+                                    + wayInfoDtoPointBank.getTimeInWay()
                                     + antWayDto.getBankPoint().getTimeInPoint()
                                     < workingDayLength;
                         } catch (Exception e) {

@@ -60,9 +60,8 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
         LOGGER.info("++++++++++++++++++++++++ antCount " + antCount + " day count " + workingDayCount);
 
         CopyOnWriteArrayList<MiniAntWayDto> miniAntWayDtos = new CopyOnWriteArrayList<>();
+        final PointDto bankPoint = AntWayDto.getBankPoint(fill.getInfoDtoTreeMap());
         do {
-            final PointDto bankPoint = AntWayDto.getBankPoint(fill.getInfoDtoTreeMap());
-
             Set<PointDto> visitedPoint = miniAntWayDtoConcurrentHashMap.entrySet().stream()
                     .map(q -> q.getValue().getWayPair())
                     .flatMap((Function<List<Pair<PointDto, PointDto>>, Stream<PointDto>>) pairs -> pairs.stream().map(w -> w.getRight()))
@@ -71,14 +70,16 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
             MiniAntWayDto miniAntWayDto = miniAntWayDtoConcurrentHashMap.get(car);
             if (miniAntWayDto == null) {
                 miniAntWayDto = new MiniAntWayDto(bankPoint, 0L, 0L, 0L, AntWayDto.getGragePoint(fill.getInfoDtoTreeMap()), new ArrayList<>());
-                miniAntWayDtoConcurrentHashMap.put(car, miniAntWayDto);
+                miniAntWayDto = miniAntWayDtoConcurrentHashMap.put(car, miniAntWayDto);
+                miniAntWayDto.setTotalTime(nvl(nvl(totalTime, miniAntWayDto.getTotalTime()), Double.valueOf(0)));
+                miniAntWayDto.setBankPoint(AntWayDto.getBankPoint(fill.getInfoDtoTreeMap()));
             }
 
             final MiniAntWayDto miniAntWayDto_____ = miniAntWayDto;
 
             final PointDto currentPoint = nvl(miniAntWayDto.getCurrentPoint(), AntWayDto.getGragePoint(fill.getInfoDtoTreeMap()));
             final Set<PointDto> notVisitedPoint = AntWayDto.getNotVisitedPoint(fill.getInfoDtoTreeMap(), visitedPoint);
-            miniAntWayDto.setTotalTime(nvl(nvl(totalTime, miniAntWayDto.getTotalTime()), 0D));
+
 
             final Map<MutablePair<PointDto, PointDto>, DoubleSummaryStatistics> collect = IntStream.range(0, 2000)
                     .parallel()
@@ -97,9 +98,8 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
                                     LOGGER.info(String.format("add best way candidate %d", miniAntWayDtos.size()));
                             }
                     )
-                    .
-                            flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto -> antWayDto.getWayPair().stream()
-                                    .map(q -> new MutablePair(q, antWayDto.getTripTelemetry().getTotalMoney())))
+                    .flatMap((Function<AntWayDto, Stream<MutablePair<MutablePair<PointDto, PointDto>, Double>>>) antWayDto -> antWayDto.getWayPair().stream()
+                            .map(q -> new MutablePair(q, antWayDto.getTripTelemetry().getTotalMoney())))
                     .collect(groupingBy(MutablePair::getLeft, mapping(MutablePair::getRight, summarizingDouble(value1 -> value1))));
             fill.getEdgeDtos().stream()
                     .parallel()
@@ -131,7 +131,6 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
                 miniAntWayDto_____.setTotalTime(miniAntWayDto_____.getTotalTime() + wayInfoDto.getTimeInWay() + nextPoint.getTimeInPoint());
                 double moneyOnThisTrip = Util.calcMoneyOnThisTrip(nextPoint, miniAntWayDto_____.getMoneyOnThisTrip(), miniAntWayDto111111111.getBankPoint());
                 miniAntWayDto_____.setMoneyOnThisTrip(moneyOnThisTrip);
-                miniAntWayDto_____.setBankPoint(miniAntWayDto111111111.getBankPoint());
                 bestWaySaverService.savePoint(new PointForSaveDto("vood", car, nextPoint.getName(), false));
             }
 

@@ -2,6 +2,8 @@ package ru.sberbank.calculation.run;
 
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +23,7 @@ import static ru.sberbank.inkass.dto.AntWayDto.nvl;
 
 @RestController
 public class RunCalculationAsync {
+    private static final Log LOGGER = LogFactory.getLog(RunCalculationAsync.class);
 
     private final FlagsService flagsService;
 
@@ -42,6 +45,7 @@ public class RunCalculationAsync {
 
     @RequestMapping(value = "/graph/reciveNewGraphSocket", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
     public boolean reciveNewGraphSocket(@RequestBody GraphDto graphDto) {
+        LOGGER.info("Graph ->" + graphDto.getEdgeDtos().size() + " getReadyForRun " + flagsService.getReadyForRun().get() + " getEndCalcFlag" + flagsService.getEndCalcFlag().get());
         flagsService.getEndCalcFlag().set(true);
         graphContainer.saveGraph(graphDto);
         return true;
@@ -49,6 +53,7 @@ public class RunCalculationAsync {
 
     @RequestMapping(value = "/graph/reciveCarSocket", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.GET)
     public boolean reciveCarSocket(@RequestBody List<ReciveCarDto> cars) {
+        LOGGER.info("ReciveCarDto ->" + cars.size() + " getReadyForRun " + flagsService.getReadyForRun().get() + " getEndCalcFlag" + flagsService.getEndCalcFlag().get());
         flagsService.getEndCalcFlag().set(true);
         cars.forEach(q -> dequeCars.addLast(Pair.of(q.getCar(), q.getTime())));
 
@@ -63,7 +68,9 @@ public class RunCalculationAsync {
         }
         if (flagsService.getReadyForRun().get() && dequeCars.size() > 0 && graphContainer.getGraph() != null) {
             flagsService.getEndCalcFlag().set(false);
-            Pair<String, Long> first = dequeCars.peekFirst();
+            LOGGER.info("ReciveCarDto ->" + dequeCars.size() + " getReadyForRun " + flagsService.getReadyForRun().get() + " getEndCalcFlag" + flagsService.getEndCalcFlag().get());
+            Pair<String, Long> first = dequeCars.removeFirst();
+            LOGGER.info("ReciveCarDto ->" + dequeCars.size() + " getReadyForRun " + flagsService.getReadyForRun().get() + " getEndCalcFlag" + flagsService.getEndCalcFlag().get());
             flagsService.getReadyForRun().set(false);
             calculationServiceAsync.calcWay(first.getKey(), Double.valueOf(nvl(first.getRight(), 0L)), graphContainer.getGraph());
         }
