@@ -8,5 +8,11 @@ public interface GraphController {
     GraphDto getNewGraph();
 
     GraphDto getRefreshedGraph(PointDto registrarPoint);
+//-------------------------------------
+
+    boolean reciveNewGraphSocket(GraphDto graphDto);
+
+    GraphDto getNewGraphSocket(GraphDto graphDto);
+
 
 }
