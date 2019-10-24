@@ -9,6 +9,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class WayCalculationApplication {
 
     public static void main(String[] args) {
+        if (1 == 1) {
+            throw new RuntimeException("Не то приложение");
+        }
         SpringApplication.run(WayCalculationApplication.class, args);
     }
 }
