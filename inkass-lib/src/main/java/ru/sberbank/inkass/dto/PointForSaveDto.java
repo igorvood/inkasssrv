@@ -10,5 +10,7 @@ import lombok.NoArgsConstructor;
 public class PointForSaveDto {
 
     private String algorithm;
+    private String car;
     private String pointName;
+    private boolean notVisit;
 }
