@@ -6,9 +6,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class WayCalculationApplication {
+public class WayCalculationTrafficApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WayCalculationApplication.class, args);
+        SpringApplication.run(WayCalculationTrafficApplication.class, args);
     }
 }
