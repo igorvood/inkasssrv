@@ -46,9 +46,9 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
     }
 
     @Override
-    public void savePoint(String algorithm, String savePoint) {
-        final ResponseEntity<PointForSaveDto> requestEntity = new ResponseEntity<>(new PointForSaveDto(algorithm, savePoint), HttpStatus.OK);
-        final ResponseEntity<Integer> exchange = restTemplate.exchange(server + savePointUrl, HttpMethod.POST, requestEntity, Integer.class);
+    public void savePoint(PointForSaveDto pointForSaveDto) {
+        final ResponseEntity<PointForSaveDto> requestEntity = new ResponseEntity<>(pointForSaveDto, HttpStatus.OK);
+        final ResponseEntity<String> exchange = restTemplate.exchange("http://172.30.10.129:3011/result/savePoint", HttpMethod.GET, requestEntity, String.class);
 
 //        final Integer forObject = restTemplate.getForObject(server + savePointUrl, Integer.class, algorithm, savePoint);
     }

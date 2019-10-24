@@ -3,7 +3,6 @@ package ru.sberbank.service.saver;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import ru.sberbank.inkass.dto.AntTripTelemetryDto;
-import ru.sberbank.inkass.dto.AntWayDto;
 import ru.sberbank.inkass.dto.EdgeDto;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,17 +31,19 @@ public class BestWayAccumulationImpl implements BestWayAccumulation {
     @Override
     public int saveBestWay(String algorithm, String pointName) {
         final Pair<CopyOnWriteArrayList<String>, AntTripTelemetryDto> antWayDtoPair = bestWays.get(algorithm);
-        CopyOnWriteArrayList<String> strings = antWayDtoPair.getLeft();
-        if (strings == null) {
+        CopyOnWriteArrayList<String> points = antWayDtoPair.getLeft();
+        if (points == null) {
             final EdgeDto edgeDto1 = graphContainer.getGraph().getEdgeDtos().stream()
                     .filter(edgeDto -> edgeDto.getFrom().getTypePoint() == GARAGE && edgeDto.getTo().getName().equals(pointName))
                     .findFirst()
                     .orElse(null);
-            strings = new CopyOnWriteArrayList<>();
-            new AntWayDto(bestWays.size())
-            bestWays.put(algorithm, Pair.of(strings, null));
+            points = new CopyOnWriteArrayList<>();
+            AntTripTelemetryDto build = AntTripTelemetryDto.builder()
+                    .build();
+//            new AntWayDto(bestWays.size())
+            bestWays.put(algorithm, Pair.of(points, null));
         }
-        strings.add(pointName);
+        points.add(pointName);
         logger.info(String.format("put point %s for algorithm %s", pointName, algorithm));
         return 0;
     }

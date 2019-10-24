@@ -30,6 +30,7 @@ public class GraphDto {
         if (infoDtoTreeMap == null) {
             final Map<Pair<PointDto, PointDto>, WayInfoDto> collect = edgeDtos.stream()
                     .map(q -> Pair.of(Pair.of(q.getFrom(), q.getTo()), q.getWayInfo()))
+                    .distinct()
                     .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
             infoDtoTreeMap = new TreeMap<>(collect);
         }

@@ -39,7 +39,8 @@ public class GraphServiceImpl implements GraphService {
     }
 
     public StartPropertyDto getProp() {
-        final StartPropertyDto propertyDto = restTemplate.getForObject(server + graphProp, StartPropertyDto.class);
+//        final StartPropertyDto propertyDto = restTemplate.getForObject(server + graphProp, StartPropertyDto.class);
+        final StartPropertyDto propertyDto = new StartPropertyDto(0, 0, 0, 1000000, 0, 480, 1000000, 480, 0.5);
         logger.info(String.valueOf(propertyDto));
         return propertyDto;
     }

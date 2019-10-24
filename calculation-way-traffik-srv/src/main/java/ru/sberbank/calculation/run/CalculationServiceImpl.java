@@ -146,7 +146,7 @@ public class CalculationServiceImpl implements CalculationService {
                 double moneyOnThisTrip = Util.calcMoneyOnThisTrip(nextPoint, currentMiniAntWayDto.getMoneyOnThisTrip(), miniAntWayDto.getBankPoint());
                 currentMiniAntWayDto.setMoneyOnThisTrip(moneyOnThisTrip);
                 currentMiniAntWayDto.setBankPoint(miniAntWayDto.getBankPoint());
-                bestWaySaverService.savePoint(String.valueOf(timeBeg), nextPoint.getName());
+//                bestWaySaverService.savePoint(String.valueOf(timeBeg), nextPoint.getName());
             }
         } while (!endCalcFlag);
         bestWaySaverService.bestWayResult();
