@@ -38,7 +38,7 @@ public class PropertiesWithJavaConfig {
                 , maxSumInPoint
                 , maxTimeInPoint
                 , maxTimeInWay
-                , maxSumInPoint * maxMoneyInAntMultiplier
+                , maxSumInPoint /** maxMoneyInAntMultiplier*/
                 , workingDayLength
                 , speedTranspirationPheromone
         );
