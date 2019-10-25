@@ -70,7 +70,7 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
             MiniAntWayDto miniAntWayDto = miniAntWayDtoConcurrentHashMap.get(car);
             if (miniAntWayDto == null) {
                 miniAntWayDto = new MiniAntWayDto(bankPoint, 0L, 0L, 0L, AntWayDto.getGragePoint(fill.getInfoDtoTreeMap()), new ArrayList<>());
-                miniAntWayDto = miniAntWayDtoConcurrentHashMap.put(car, miniAntWayDto);
+                miniAntWayDtoConcurrentHashMap.put(car, miniAntWayDto);
                 miniAntWayDto.setTotalTime(nvl(nvl(totalTime, miniAntWayDto.getTotalTime()), Double.valueOf(0)));
                 miniAntWayDto.setBankPoint(AntWayDto.getBankPoint(fill.getInfoDtoTreeMap()));
             }
@@ -82,7 +82,7 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
 
 
             final Map<MutablePair<PointDto, PointDto>, DoubleSummaryStatistics> collect = IntStream.range(0, 2000)
-                    .parallel()
+//                    .parallel()
                     .mapToObj(i -> new AntWayDto(i, fill.getInfoDtoTreeMap(), bankPoint, currentPoint, notVisitedPoint, miniAntWayDto_____))
                     .map(q -> calcChanceService.runOneAnt(q))
                     .peek(antWayDto -> {
@@ -110,7 +110,7 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
                     });
 
 
-            if (!flagsService.getEndCalcFlag().get()) {
+            if (flagsService.getEndCalcFlag().get()) {
                 final MiniAntWayDto miniAntWayDto111111111 = miniAntWayDtos.stream()
                         .max(Comparator.comparingDouble(MiniAntWayDto::getTotalMoney))
                         .get();
@@ -121,19 +121,28 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
                 } catch (IndexOutOfBoundsException e) {
                     System.out.println(e);
                 }
-                final WayInfoDto wayInfoDto = fill.getInfoDtoTreeMap().get(pointDtoPointDtoPair);
-                final PointDto nextPoint = pointDtoPointDtoPair.getRight();
+                List<Pair<PointDto, PointDto>> wayPair = miniAntWayDto111111111.getWayPair();
+                if (pointDtoPointDtoPair != null /*&& !wayPair.get(wayPair.size()-1).getRight().getTypePoint().equals(BANK)*/) {
+                    WayInfoDto wayInfoDto;
+                    try {
+                        wayInfoDto = fill.getInfoDtoTreeMap().get(pointDtoPointDtoPair);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
 
-                miniAntWayDto_____.getWayPair().add(pointDtoPointDtoPair);
 
-                miniAntWayDto_____.setCurrentPoint(nextPoint);
-                miniAntWayDto_____.setTotalMoney(miniAntWayDto_____.getTotalMoney() + nextPoint.getSum());
-                miniAntWayDto_____.setTotalTime(miniAntWayDto_____.getTotalTime() + wayInfoDto.getTimeInWay() + nextPoint.getTimeInPoint());
-                double moneyOnThisTrip = Util.calcMoneyOnThisTrip(nextPoint, miniAntWayDto_____.getMoneyOnThisTrip(), miniAntWayDto111111111.getBankPoint());
-                miniAntWayDto_____.setMoneyOnThisTrip(moneyOnThisTrip);
-                bestWaySaverService.savePoint(new PointForSaveDto("vood", car, nextPoint.getName(), false));
+                    final PointDto nextPoint = pointDtoPointDtoPair.getRight();
+
+                    miniAntWayDto_____.getWayPair().add(pointDtoPointDtoPair);
+
+                    miniAntWayDto_____.setCurrentPoint(nextPoint);
+                    miniAntWayDto_____.setTotalMoney(miniAntWayDto_____.getTotalMoney() + nextPoint.getSum());
+                    miniAntWayDto_____.setTotalTime(miniAntWayDto_____.getTotalTime() + wayInfoDto.getTimeInWay() + nextPoint.getTimeInPoint());
+                    double moneyOnThisTrip = Util.calcMoneyOnThisTrip(nextPoint, miniAntWayDto_____.getMoneyOnThisTrip(), miniAntWayDto111111111.getBankPoint());
+                    miniAntWayDto_____.setMoneyOnThisTrip(moneyOnThisTrip);
+                    bestWaySaverService.savePoint(new PointForSaveDto("vood", car, nextPoint.getName(), false));
+                }
             }
-
 
         } while (!flagsService.getEndCalcFlag().get());
 

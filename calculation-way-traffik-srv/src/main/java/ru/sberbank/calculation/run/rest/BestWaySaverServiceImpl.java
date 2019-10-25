@@ -47,7 +47,8 @@ public class BestWaySaverServiceImpl implements BestWaySaverService {
 
     @Override
     public void savePoint(PointForSaveDto pointForSaveDto) {
-        restTemplate.getForObject(String.format("http://172.30.10.129:3011/result/savePoint?car=%s&point=%s"
+        logger.info("pointForSaveDto ----------------->" + pointForSaveDto.getPointName());
+        restTemplate.getForObject(String.format("http://172.30.10.182:3011/result/savePoint?car=%s&point=%s"
                 , pointForSaveDto.getCar()
                 , pointForSaveDto.getPointName())
                 , String.class);

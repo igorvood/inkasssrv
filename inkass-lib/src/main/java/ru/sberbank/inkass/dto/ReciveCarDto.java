@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ReciveCarDto {
 
     private String car;
-    private Long time;
+    private double time;
 }

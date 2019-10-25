@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import ru.sberbank.calculation.run.rest.BestWaySaverService;
 import ru.sberbank.calculation.run.rest.GraphService;
 import ru.sberbank.inkass.dto.*;
@@ -81,7 +80,7 @@ public class CalculationServiceImpl implements CalculationService {
                     final BestWayCandidateDto worstWayCandidateDto = bestWays.stream()
                             .min(Comparator.comparingDouble(BestWayCandidateDto::getTotalMoney))
                             .get();
-                    Assert.isTrue(bestWayCandidateDto.getTotalMoney() >= worstWayCandidateDto.getTotalMoney(), () -> "плохой алгоритм сравнения");
+//                    Assert.isTrue(bestWayCandidateDto.getTotalMoney() >= worstWayCandidateDto.getTotalMoney(), () -> "плохой алгоритм сравнения");
                     bestWaySaverService.saveBestWay(bestWayCandidateDto);
                     fill.getEdgeDtos().stream()
                             .parallel()

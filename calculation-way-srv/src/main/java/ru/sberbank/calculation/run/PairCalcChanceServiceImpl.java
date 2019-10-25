@@ -136,11 +136,11 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         antWayDto.getTripTelemetry().setTotalMoney(antWayDto.getTripTelemetry().getTotalMoney() + right.getSum());
         antWayDto.getTripTelemetry().setTotalTime(antWayDto.getTripTelemetry().getTotalTime() + wayInfoDto.getTimeInWay() + right.getTimeInPoint());
         antWayDto.getWayPair().add(nextPoint);
-        Assert.isTrue(right.equals(antWayDto.getBankPoint()) || antWayDto.getNotVisitedPoint().remove(right), () -> String.format("Point all ready visited %s", right));
+//        Assert.isTrue(right.equals(antWayDto.getBankPoint()) || antWayDto.getNotVisitedPoint().remove(right), () -> String.format("Point all ready visited %s", right));
 //        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
-        Assert.isTrue(antWayDto.getTripTelemetry().getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getTripTelemetry().getMoneyOnThisTrip());
+//        Assert.isTrue(antWayDto.getTripTelemetry().getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getTripTelemetry().getMoneyOnThisTrip());
 //        if (antWayDto.getTotalTime() > workingDayLength)
-        Assert.isTrue((antWayDto.getTripTelemetry().getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTripTelemetry().getTotalTime());
+//        Assert.isTrue((antWayDto.getTripTelemetry().getTotalTime() < workingDayLength) || antWayDto.getBankPoint().equals(right), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTripTelemetry().getTotalTime());
         antWayDto.setCurrentPoint(right);
         return true;
 

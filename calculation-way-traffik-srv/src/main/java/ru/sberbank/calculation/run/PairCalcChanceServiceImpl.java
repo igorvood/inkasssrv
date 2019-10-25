@@ -2,7 +2,6 @@ package ru.sberbank.calculation.run;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import ru.sberbank.inkass.dto.AntWayDto;
 import ru.sberbank.inkass.dto.PointDto;
 import ru.sberbank.inkass.dto.WayInfoDto;
@@ -138,12 +137,12 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         //        delete
 
         final PointDto rightPoint = nextPoint.getRight();
-        Assert.notNull(rightPoint, "registerPoint Point is empty");
-        Assert.notNull(antWayDto, "registerPoint antWayDto is empty");
+//        Assert.notNull(rightPoint, "registerPoint Point is empty");
+//        Assert.notNull(antWayDto, "registerPoint antWayDto is empty");
         if (nextPoint.getLeft().equals(rightPoint))
             return false;
         final WayInfoDto wayInfoDto = antWayDto.getRoadMap().get(nextPoint);
-        Assert.notNull(antWayDto, "registerPoint wayInfoDto is empty");
+//        Assert.notNull(antWayDto, "registerPoint wayInfoDto is empty");
         final double currentMoneyOnThisTrip = antWayDto.getTripTelemetry().getMoneyOnThisTrip();
         final PointDto bankPoint = antWayDto.getBankPoint();
 
@@ -155,11 +154,11 @@ public class PairCalcChanceServiceImpl implements CalcChanceService {
         antWayDto.getTripTelemetry().setTotalTime(antWayDto.getTripTelemetry().getTotalTime() + wayInfoDto.getTimeInWay() + rightPoint.getTimeInPoint());
         antWayDto.getWayPair().add(nextPoint);
 //        if (!(rightPoint.equals(bankPoint) || antWayDto.getNotVisitedPoint().remove(rightPoint)))
-        Assert.isTrue(rightPoint.equals(bankPoint) || antWayDto.getNotVisitedPoint().remove(rightPoint), () -> String.format("Point all ready visited %s", rightPoint));
+//        Assert.isTrue(rightPoint.equals(bankPoint) || antWayDto.getNotVisitedPoint().remove(rightPoint), () -> String.format("Point all ready visited %s", rightPoint));
 //        if (antWayDto.getMoneyOnThisTrip() > maxMoneyInAnt)
-        Assert.isTrue(antWayDto.getTripTelemetry().getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getTripTelemetry().getMoneyOnThisTrip());
+//        Assert.isTrue(antWayDto.getTripTelemetry().getMoneyOnThisTrip() < maxMoneyInAnt, () -> "Max money in ant " + maxMoneyInAnt + " but current " + antWayDto.getTripTelemetry().getMoneyOnThisTrip());
 //        if (antWayDto.getTotalTime() > workingDayLength)
-        Assert.isTrue((antWayDto.getTripTelemetry().getTotalTime() < workingDayLength) || bankPoint.equals(rightPoint), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTripTelemetry().getTotalTime());
+//        Assert.isTrue((antWayDto.getTripTelemetry().getTotalTime() < workingDayLength) || bankPoint.equals(rightPoint), () -> "Max working day for ant " + workingDayLength + " but current " + antWayDto.getTripTelemetry().getTotalTime());
         antWayDto.setCurrentPoint(rightPoint);
         return true;
 
