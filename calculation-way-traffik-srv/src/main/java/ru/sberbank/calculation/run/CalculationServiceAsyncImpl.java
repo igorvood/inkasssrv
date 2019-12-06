@@ -81,6 +81,11 @@ public class CalculationServiceAsyncImpl implements CalculationServiceAsync {
             final Set<PointDto> notVisitedPoint = AntWayDto.getNotVisitedPoint(fill.getInfoDtoTreeMap(), visitedPoint);
 
 
+            final List<String> collect1 = IntStream.range(0, 2000)
+                    .mapToObj(q -> "Car" + q)
+                    .collect(toList());
+
+
             final Map<MutablePair<PointDto, PointDto>, DoubleSummaryStatistics> collect = IntStream.range(0, 2000)
 //                    .parallel()
                     .mapToObj(i -> new AntWayDto(i, fill.getInfoDtoTreeMap(), bankPoint, currentPoint, notVisitedPoint, miniAntWayDto_____))
